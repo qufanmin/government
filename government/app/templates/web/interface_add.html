@@ -1,0 +1,162 @@
+﻿{% load staticfiles %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>接口数据创建</title>
+<link rel="stylesheet" href="{% static 'css/bootstrap.css' %}" />
+<link rel="stylesheet" href="{% static 'css/css.css' %}" />
+<script type="text/javascript" src="{% static 'js/jquery1.9.0.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/sdmenu.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/laydate/laydate.js' %}"></script>
+
+</head>
+
+<body>
+<div class="header">
+	 <div class="logo"><img  src="{% static 'img/mobile.png' %}" /></div>
+     
+				<div class="header-right">
+                <i class="icon-question-sign icon-white"></i> <a href="#">帮助</a> <i class="icon-off icon-white"></i> <a id="modal-973558" href="#modal-container-973558" role="button" data-toggle="modal">注销</a> <i class="icon-user icon-white"></i> <a href="#">开票员的工作平台</a> <i class="icon-envelope icon-white"></i> <a href="#">发送短信</a>
+                <div id="modal-container-973558" class="modal hide fade" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width:300px; margin-left:-150px; top:30%">
+				<div class="modal-header">
+					 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+					<h3 id="myModalLabel">
+						注销系统
+					</h3>
+				</div>
+				<div class="modal-body">
+					<p>
+						您确定要注销退出系统吗？
+					</p>
+				</div>
+				<div class="modal-footer">
+					 <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button> <a class="btn btn-primary" style="line-height:20px;" href="登录.html" >确定退出</a>
+				</div>
+			</div>
+				</div>
+</div>
+<!-- 顶部 -->     
+            
+<div id="middle">
+     <div class="left">
+     
+     <script type="text/javascript">
+var myMenu;
+window.onload = function() {
+	myMenu = new SDMenu("my_menu");
+	myMenu.init();
+};
+</script>
+	<div id="my_menu" class="sdmenu">
+	<div >
+		<span>数据服务</span>
+		<a href="{% url 'consultation' %}">咨询接口</a>
+		<a href="{% url 'quotation' %}">牛人实盘</a>
+	</div>
+    <div >
+		<span>证券APP</span>
+		<a href="{% url 'data' %}">调试</a>
+	</div>
+      <div >
+		<span>数据监控</span>
+		<a href="{% url 'memory_management' %}">内存监控</a>
+	</div>
+    <div >
+		<span>后台配置</span>
+		<a href="{% url 'interface' %}">接口信息配置</a>
+		<a href="{% url 'personnel' %}">人员信息配置</a>
+		<a href="{% url 'project' %}">项目信息配置</a>
+	</div>
+    </div>
+     </div>
+     <div class="Switch"></div>
+     <script type="text/javascript">
+	$(document).ready(function(e) {
+    $(".Switch").click(function(){
+	$(".left").toggle();
+	 
+		});
+});
+</script>
+
+     <div class="right"  id="mainFrame">
+     
+     <div class="right_cont">
+<ul class="breadcrumb">当前位置：
+  <a href="#">首页</a> <span class="divider">/</span>
+  <a href="#">后台配置</a> <span class="divider">/</span>
+  接口数据录入
+</ul>
+   
+   <div class="title_right"><strong>发货单填写</strong></div>
+         <div class="alert">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            温馨提示：接口对接信息录入
+       </div>
+<div style="width:900px;margin:auto;">
+      <table class="table table-bordered" >
+     <tr>
+       <td width="12%" align="right" nowrap="nowrap" bgcolor="#f1f1f1">业务线：</td>
+       <td width="38%"><input type="text" name="input" id="input1" class="span1-5"  /></td>
+       <td width="12%" align="right" nowrap="nowrap" bgcolor="#f1f1f1">责任人：</td>
+       <td width="38%"><input type="text" name="input" id="input" class="span1-5"  /></td>
+     </tr>
+     <tr>
+       <td width="12%" align="right" nowrap="nowrap" bgcolor="#f1f1f1">接口名称：</td>
+       <td width="38%"><input type="text" name="input" id="input2" class="span1-5"  /></td>
+       <td align="right" nowrap="nowrap" bgcolor="#f1f1f1">接口描述：</td>
+       <td><input type="text" name="input3" id="input3" class="span1-5"  /></td>
+     </tr>
+     <tr>
+       <td align="right" bgcolor="#f1f1f1">请求方式：</td>
+       <td><input type="text" name="input4" id="input4" class="span1-5"  /></td>
+       <td align="right" nowrap="nowrap" bgcolor="#f1f1f1">IP地址：</td>
+       <td><input type="text" name="input2" id="input4" class="span1-5"  /></td>
+     </tr>
+     <tr>
+       <td align="right" nowrap="nowrap" bgcolor="#f1f1f1">接口路径：</td>
+       <td colspan="3"><textarea name="input9" id="input9" class="span10"></textarea></td>
+     </tr>
+     <tr>
+       <td align="right" nowrap="nowrap" bgcolor="#f1f1f1">接口请求值：</td>
+       <td colspan="3"><textarea name="input9" id="input10" class="span10"></textarea></td>
+     </tr>
+     <tr>
+       <td align="right" nowrap="nowrap" bgcolor="#f1f1f1">接口详情描述：</td>
+       <td colspan="3"><textarea name="input11" id="input11" class="span10"></textarea></td>
+     </tr>
+   </table>
+      <table  class="margin-bottom-20  table no-border" >
+          <tr>
+              <td class="text-center"><input type="button" value="确定" class="btn btn-info  " style="width:80px;" /></td>
+          </tr>
+      </table>
+   </div>
+               <div class="alert">
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+      温馨提示：标示为* 为必填项
+       </div>
+ </div>
+     </div>
+    </div>
+    
+<!-- 底部 -->
+<div id="footer">版权所有：平安证券 &copy; 2017&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" target="_blank">软件保障组</a></div>
+    
+    
+
+ <script>
+!function(){
+laydate.skin('molv');
+laydate({elem: '#Calendar'});
+}();
+ 
+</script>
+
+
+
+ 
+</body>
+</html>
