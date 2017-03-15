@@ -95,41 +95,46 @@ window.onload = function() {
             <button type="button" class="close" data-dismiss="alert">&times;</button>
             温馨提示：接口对接信息录入
        </div>
-<form method="post" action="/app/interface_add/">
+         {% for item in data%}
+<form action="{%url 'interface_edit' item.id %}"  method="POST">
      {% csrf_token %}
 <div style="width:900px;margin:auto;">
+
       <table class="table table-bordered" >
      <tr>
        <td width="12%" align="right" nowrap="nowrap" bgcolor="#f1f1f1">业务线：</td>
-       <td width="38%"><input type="text" name="business" id="input1" class="span1-5"  /></td>
+       <td width="38%"><input type="text" name="business" id="input1" class="span1-5" value="{{item.business}}" />
+       <input type="hidden" name="id" id="input1" class="span1-5" value="{{item.id}}" />
+       </td>
        <td width="12%" align="right" nowrap="nowrap" bgcolor="#f1f1f1">责任人：</td>
-       <td width="38%"><input type="text" name="responsible" id="input" class="span1-5"  /></td>
+       <td width="38%"><input type="text" name="responsible" id="input" class="span1-5" value="{{item.responsible}}" /></td>
      </tr>
      <tr>
        <td width="12%" align="right" nowrap="nowrap" bgcolor="#f1f1f1">接口名称：</td>
-       <td width="38%"><input type="text" name="interfaceName" id="input2" class="span1-5"  /></td>
+       <td width="38%"><input type="text" name="interfaceName" id="input2" class="span1-5" value="{{item.interfaceName}}" /></td>
        <td align="right" nowrap="nowrap" bgcolor="#f1f1f1">接口描述：</td>
-       <td><input type="text" name="description" id="description" class="span1-5"  /></td>
+       <td><input type="text" name="description" id="description" class="span1-5" value="{{item.description}}" /></td>
      </tr>
      <tr>
        <td align="right" bgcolor="#f1f1f1">请求方式：</td>
-       <td><input type="text" name="methods" id="methods" class="span1-5"  /></td>
+       <td><input type="text" name="methods" id="methods" class="span1-5" value="{{item.methods}}" /></td>
        <td align="right" nowrap="nowrap" bgcolor="#f1f1f1">IP地址：</td>
-       <td><input type="text" name="IP" id="input4" class="span1-5"  /></td>
+       <td><input type="text" name="IP" id="input4" class="span1-5"  value="{{item.IP}}"/></td>
      </tr>
      <tr>
        <td align="right" nowrap="nowrap" bgcolor="#f1f1f1">接口路径：</td>
-       <td colspan="3"><textarea name="interfaceAdress" id="input9" class="span10"></textarea></td>
+       <td colspan="3"><textarea name="interfaceAdress" id="input9" class="span10">{{item.interfaceAdress}}</textarea></td>
      </tr>
      <tr>
        <td align="right" nowrap="nowrap" bgcolor="#f1f1f1">接口请求值：</td>
-       <td colspan="3"><textarea name="interfaceBody" id="input10" class="span10"></textarea></td>
+       <td colspan="3"><textarea name="interfaceBody" id="input10" class="span10">{{item.interfaceBody}}</textarea></td>
      </tr>
      <tr>
        <td align="right" nowrap="nowrap" bgcolor="#f1f1f1">接口详情描述：</td>
-       <td colspan="3"><textarea name="interfaceDetails" id="input11" class="span10"></textarea></td>
+       <td colspan="3"><textarea name="interfaceDetails" id="input11" class="span10">{{item.interfaceDetails}}</textarea></td>
      </tr>
    </table>
+
       <table  class="margin-bottom-20  table no-border" >
           <tr>
               <td class="text-center"><input type="submit" value="确定" class="btn btn-info  " style="width:80px;" /></td>
@@ -137,6 +142,7 @@ window.onload = function() {
       </table>
    </div>
     </form>
+          {% endfor %}
                <div class="alert">
       <button type="button" class="close" data-dismiss="alert">&times;</button>
       温馨提示：标示为* 为必填项

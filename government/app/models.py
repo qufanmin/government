@@ -64,3 +64,15 @@ class Interfaceqqu(models.Model):
 	description=models.CharField(max_length=255, null=True)
 def __unicode__(self):
 	return self.interfaceName
+class Interface_add(models.Model):
+    business=models.CharField(max_length=255, null=True)
+    responsible=models.CharField(max_length=255, null=True)
+    interfaceName=models.CharField(max_length=255, null=True)
+    description=models.CharField(max_length=255, null=True)
+    methods=models.CharField(max_length=255, null=True)
+    IP=models.CharField(max_length=255, null=True)
+    interfaceAdress=models.CharField(max_length=255, null=True)
+    interfaceBody=models.CharField(max_length=1000, null=True)
+    interfaceDetails=models.CharField(max_length=255, null=True)
+def __unicode__(self):
+	return self.business

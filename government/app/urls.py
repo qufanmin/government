@@ -30,6 +30,9 @@ urlpatterns = [
     url(r'^project_config/', dataservice_views.project_config, name='project'),
     url(r'^project_delete-(?P<id>\d+)/$', dataservice_views.project_delete, name="project_delete"),
     url(r'^interface_add/', dataservice_views.interface_add, name='interface_add'),
+    url(r'^interface_delete-(\d+)/$', dataservice_views.interface_delete, name='interface_delete'),
+    url(r'^interface_edit-(?P<id>\d+)/$', dataservice_views.interface_edit, name="interface_edit"),
+    url(r'^interface_request-(\d+)/$', dataservice_views.interface_request, name='interface_request'),
     url(r'^consultation/', dataservice_views.consultation, name='consultation'),
     url(r'^quotation/', dataservice_views.quotation, name='quotation'),
     url(r'^api_details/', dataservice_views.api_details, name='api_details'),
@@ -37,5 +40,5 @@ urlpatterns = [
 	url(r'^interface_config_qu/', memory_views.interface_config_qu, name='interface_config_qu'),
     url(r'^interface_exe-(\d+)/$', dataservice_views.interface_exe, name='interface_exe'),
     url(r'^interface_exe_request/', dataservice_views.interface_exe_request, name='interface_exe_request'),
-    url(r'^interface_delete-(\d+)/$', dataservice_views.interface_delete, name='interface_delete'),
+    url(r'^interface_delete_qu-(\d+)/$', dataservice_views.interface_delete_qu, name='interface_delete_qu'),
 ]

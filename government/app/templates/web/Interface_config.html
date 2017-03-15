@@ -133,7 +133,7 @@ window.onload = function() {
        <tr align="center">
            <td nowrap="nowrap"><strong>业务名称</strong></td>
            <td nowrap="nowrap"><strong>接口名称</strong></td>
-           <td nowrap="nowrap"><strong>接口业务描述</strong></td>
+           <td nowrap="nowrap"><strong>接口描述</strong></td>
            <td><strong>请求方式</strong></td>
            <td><strong>接口IP地址</strong></td>
            <td><strong>接口路径</strong></td>
@@ -143,15 +143,15 @@ window.onload = function() {
          </tr>
        {% for item in data %}
        <tr align="center">
-         <td nowrap="nowrap">{{item.businessName}}</td>
-         <td nowrap="nowrap">{{item.businessDescribe}}</td>
-         <td nowrap="nowrap">{{item.InterfaceName}}</td>
-         <td nowrap="nowrap">{{item.requestMode}}</td>
-         <td nowrap="nowrap">{{item.ipAddress}}</td>
-         <td nowrap="nowrap">{{item.InterfaceURL}}</td>
-         <td nowrap="nowrap">{{item.InterfaceIP}}</td>
-         <td nowrap="nowrap">{{item.AdministrationName}}</td>
-         <td nowrap="nowrap"><a href="#">删除</a> <a href="#">编辑</a></td>
+         <td nowrap="nowrap">{{item.business}}</td>
+         <td nowrap="nowrap">{{item.interfaceName}}</td>
+         <td nowrap="nowrap">{{item.description}}</td>
+         <td nowrap="nowrap">{{item.methods}}</td>
+         <td nowrap="nowrap">{{item.IP}}</td>
+         <td nowrap="nowrap" title="{{item.interfaceAdress}}"><div style="width:100px;overflow-x:hidden;overflow-y:hidden;">{{item.interfaceAdress}}</div></td>
+         <td nowrap="nowrap" title="{{item.interfaceBody}}"><div style="width:100px;overflow-x:hidden;overflow-y:hidden;">{{item.interfaceBody}}</div></td>
+         <td nowrap="nowrap">{{item.responsible}}</td>
+         <td nowrap="nowrap"><a href="{%url 'interface_delete' item.id %}">删除</a> <a href="{%url 'interface_edit' item.id %}">编辑</a><a href="{%url 'interface_request' item.id %}">执行</a></td>
        </tr>
        {% endfor %}
      </tbody>
@@ -159,8 +159,8 @@ window.onload = function() {
          <div class="title_right">
              <span class="pull-right margin-bottom-5">
                  <ul class="pager">
-                     <li><a href="#">上一页</a></li>
-                     <li><a href="#">下一页</a></li>
+                     <li><a href="/app/interface_config?curPage={{curPage}}&&allPage={{allPage}}&&pageType=pageUp">上一页</a></li>
+                     <li><a href="/app/interface_config?curPage={{curPage}}&&allPage={{allPage}}&&pageType=pageDown">下一页</a></li>
                  </ul>
              </span>
          </div>

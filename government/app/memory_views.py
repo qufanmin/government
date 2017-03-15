@@ -1,7 +1,7 @@
 # coding:utf-8
 from django.shortcuts import render
 from django.http import HttpResponse
-from app.models import LeakCanaryInfo, InterfaceConfigure,Interfaceqqu
+from app.models import LeakCanaryInfo, InterfaceConfigure,Interfaceqqu,Interface_add
 from django.core import serializers
 import json
 
@@ -52,18 +52,24 @@ def interface_config(request):
         pageType = ''
         deviceModel = ''
     if pageType == 'pageDown':
-        curPage += 1
-    if pageType == 'pageUP':
-        curPage -= 1
+        if curPage<allPage:
+            curPage += 1
+        else:
+            curPage=allPage
+    if pageType == 'pageUp':
+        if curPage==1:
+            curPage=1
+        else:
+            curPage -= 1
     start = (curPage - 1) * 10
     end = start + 10
-    print "**************", id
+    print start,end,curPage,allPage
     if deviceModel != "":
-        data = InterfaceConfigure.objects.filter(deviceModel=deviceModel).order_by("-id")[start:end]
-        allPostCounts = InterfaceConfigure.objects.filter(deviceModel=deviceModel).order_by("-id").count()
+        data = Interface_add.objects.filter(deviceModel=deviceModel).order_by("-id")[start:end]
+        allPostCounts = Interface_add.objects.filter(deviceModel=deviceModel).order_by("-id").count()
     else:
-        data = InterfaceConfigure.objects.all().order_by("-id")[start:end]
-        allPostCounts = InterfaceConfigure.objects.all().order_by("-id").count()
+        data = Interface_add.objects.all().order_by("-id")[start:end]
+        allPostCounts = Interface_add.objects.all().order_by("-id").count()
     if curPage == 1 and allPage == 1:
         print allPostCounts
         allPage = allPostCounts / 10
@@ -71,7 +77,7 @@ def interface_config(request):
         if remainPost > 0:
             allPage += 1
     print '&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&', data
-    return render(request, 'web/interface_config.html', {'data': data, 'curPage': curPage})
+    return render(request, 'web/interface_config.html', {'data': data, 'curPage': curPage,'allPage':allPage})
 
 
 def memory_info(request):

@@ -2,7 +2,7 @@
 from django.shortcuts import render, render_to_response, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect, response
 from app.project_from import ProjectConfigureForm
-from app.models import ProjectConfigure, InterfaceConfigure,Interfaceqqu
+from app.models import ProjectConfigure, InterfaceConfigure,Interfaceqqu,Interface_add
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 from django.core.urlresolvers import reverse
@@ -23,9 +23,15 @@ def project_config(request):
         pageType = ''
         businessName = ''
     if pageType == 'pageDown':
-        curPage += 1
-    if pageType == 'pageUP':
-        curPage -= 1
+        if curPage<allPage:
+            curPage += 1
+        else:
+            curPage=allPage
+    if pageType == 'pageUp':
+        if curPage==1:
+            curPage=1
+        else:
+            curPage -= 1
     start = (curPage - 1) * 10
     end = start + 10
     print "**************", id
@@ -41,7 +47,7 @@ def project_config(request):
         remainPost = allPostCounts % 10
         if remainPost > 0:
             allPage += 1
-    return render(request, 'web/project_config.html', {'data': data, 'curPage': curPage})
+    return render(request, 'web/project_config.html', {'data': data, 'curPage': curPage,'allPage':allPage})
 
 
 @csrf_exempt
@@ -84,10 +90,66 @@ def project_delete(request,id):
 
 def interface_add(request):
     string = u"我在自强学堂学习Django，用它来建网站"
-    # return HttpResponse(u"调试测试")
-    return render(request, 'web/interface_add.html', {'string': string})
-
-
+#添加接口方法，如果post提交数据，保存到数据库，返回配置页面
+# return HttpResponse(u"调试测试")
+    if request.method=='POST':
+        business=request.POST['business']
+        responsible=request.POST['responsible']
+        interfaceName=request.POST['interfaceName']
+        description=request.POST['description']
+        methods=request.POST['methods']
+        IP=request.POST['IP']
+        interfaceAdress=request.POST['interfaceAdress']
+        interfaceBody=request.POST['interfaceBody']
+        interfaceDetails=request.POST['interfaceDetails']
+        print business+responsible+interfaceName+description+methods+IP+interfaceAdress+interfaceBody+interfaceDetails
+        data=Interface_add(business=business,responsible=responsible,interfaceName=interfaceName,description=description,methods=methods,IP=IP,interfaceAdress=interfaceAdress,interfaceBody=interfaceBody,interfaceDetails=interfaceDetails)
+        data.save()
+        return HttpResponseRedirect('/app/interface_config/')
+    else:
+        return render(request, 'web/interface_add.html', {'string': string})
+#删除接口
+def interface_delete(request,id):
+    entry = get_object_or_404(Interface_add, pk=int(id))
+    entry.delete()
+    return HttpResponseRedirect('/app/interface_config')
+#编辑接口
+def interface_edit(request,id):
+    if request.method=='POST':
+        business=request.POST['business']
+        responsible=request.POST['responsible']
+        interfaceName=request.POST['interfaceName']
+        description=request.POST['description']
+        methods=request.POST['methods']
+        IP=request.POST['IP']
+        interfaceAdress=request.POST['interfaceAdress']
+        interfaceBody=request.POST['interfaceBody']
+        interfaceDetails=request.POST['interfaceDetails']
+        Interface_add.objects.filter(id=int(id)).update(business=business,responsible=responsible,interfaceName=interfaceName,description=description,methods=methods,IP=IP,interfaceAdress=interfaceAdress,interfaceBody=interfaceBody,interfaceDetails=interfaceDetails)
+        return HttpResponseRedirect('/app/interface_config')
+    else:
+        id=int(id)
+        data=Interface_add.objects.filter(id=id)
+        return render(request, 'web/interface_edit.html',{'data':data})
+#执行接口，发送请求
+def interface_request(request,id):
+    if request.method=='POST':
+        id=int(request.POST['id'])
+        urldata=request.POST['url']
+        para1=request.POST['header']
+        para2= request.POST['body'].encode('utf-8')
+        payload=json.loads(para2)
+        print type(payload)
+        print payload
+        responsedata=requests.post(urldata,data=payload)
+        data=Interface_add.objects.filter(id=id)
+        print id,data,responsedata
+#       return render(request, 'web/interface_exe.html',{"data":json.dumps(responsedata.json())},RequestContext(request))
+        return render(request, 'web/interface_request.html',{'data':data,'responsedata':responsedata.text})
+    else:
+        id=int(id)
+        data=Interface_add.objects.filter(id=id)
+        return render(request, 'web/interface_request.html',{'data':data})
 def consultation(request):
     string = u"我在自强学堂学习Django，用它来建网站"
     # return HttpResponse(u"调试测试")
@@ -148,7 +210,7 @@ def interface_exe_request(request):
     return render(request, 'web/interface_exe.html',{"responsedata":responsedata.text,"data":data})
 #删除接口
 @csrf_exempt
-def interface_delete(request,id):
+def interface_delete_qu(request,id):
     entry = get_object_or_404(Interfaceqqu, pk=int(id))
     entry.delete()
     return HttpResponseRedirect('/app/interface_config_qu')
