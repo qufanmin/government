@@ -4,13 +4,14 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>接口数据创建</title>
+<link rel="stylesheet" href="{% static 'dist/jquery.jsonview.css' %}" />
 <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}" />
 <link rel="stylesheet" href="{% static 'css/css.css' %}" />
 <script type="text/javascript" src="{% static 'js/jquery1.9.0.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/sdmenu.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/laydate/laydate.js' %}"></script>
-
+<script type="text/javascript" src="{% static 'dist/jquery.jsonview.js' %}"></script>
 </head>
 
 <body>
@@ -51,24 +52,23 @@ window.onload = function() {
 </script>
 	<div id="my_menu" class="sdmenu">
 	<div >
-		<span>数据服务</span>
-		<a href="{% url 'consultation' %}">咨询接口</a>
-		<a href="{% url 'quotation' %}">牛人实盘</a>
+		<span>大数据服务组</span>
+		 {% for item in menu_bigdata %}
+		  <a href=/app/consultation/?name={{item.ProjectName}}>{{item.ProjectName}}</a>
+         {% endfor %}
 	</div>
     <div >
-		<span>证券APP</span>
-		<a href="{% url 'data' %}">调试</a>
-	</div>
-      <div >
-		<span>数据监控</span>
-		<a href="{% url 'memory_management' %}">内存监控</a>
+		<span>APP组</span>
+		 {% for item in menu_app %}
+		  <a href=/app/consultation/?name={{item.ProjectName}}>{{item.ProjectName}}</a>
+         {% endfor %}
 	</div>
     <div >
 		<span>后台配置</span>
 		<a href="{% url 'interface' %}">接口信息配置</a>
 		<a href="{% url 'personnel' %}">人员信息配置</a>
 		<a href="{% url 'project' %}">项目信息配置</a>
-		<a href="{% url 'interface_config_qu' %}">接口信息相关</a>
+        <!--<a href="{% url 'interface_config_qu' %}">接口信息相关</a>-->
 	</div>
     </div>
      </div>
@@ -102,16 +102,17 @@ window.onload = function() {
       {% csrf_token %}
 <!-- 开始-->
 
-        <input type="text" name="methods" placeholder="请求方式" value="{{item.methods}}" disabled="false"><input type="submit" value="发送"></br>
+        <input id="methods" type="text" name="methods" placeholder="请求方式" value="{{item.methods}}" disabled="false"><input id="btn_data" type="button" value="发送"></br>
         <input type="hidden" name="id" value="{{item.id}}">
-		<textarea  name="url" placeholder="请求地址" style="margin: 0px 0px 10px; height: 24px; width: 500px;">{{item.interfaceAdress}}</textarea></br>
+		<textarea  id='url' name="url" placeholder="请求地址" style="margin: 0px 0px 10px; height: 24px; width: 500px;">{{item.interfaceAdress}}</textarea></br>
         <input type="text" name="header" placeholder="请求头" value={{item.requestHeader}}></br>
         <textarea name="body" placeholder="请求体" style="margin: 0px 0px 10px; height: 340px; width: 500px;">{{item.interfaceBody}}</textarea>
         <!-- 结束-->
 
 	</form>
 	{% endfor %}
-     <textarea placeholder="返回结果" style="margin: 0px 0px 10px; height: 340px; width: 500px;">{{ responsedata }}</textarea>
+     <textarea id="result" placeholder="返回结果" style="margin: 0px 0px 10px; height: 340px; width: 500px;background:yellow; font-size:20px" >{{ responsedata }}</textarea>
+	<div id="json"></div>
    </div>
                <div class="alert">
       <button type="button" class="close" data-dismiss="alert">&times;</button>
@@ -131,7 +132,30 @@ window.onload = function() {
 laydate.skin('molv');
 laydate({elem: '#Calendar'});
 }();
- 
+//ajax请求
+$(document).ready(function(){
+var methods=$("#methods").val()
+	$("#btn_data").bind("click",
+                 function() {
+                        	//下面是ajax
+                        	var url=$("#url").val()
+                        	var result=$("#result").val()
+                        	var json=$.parseJSON(result)
+                        	//var json=eval(result)
+                        	$("#json").JSONView(json)
+							console.log(typeof(json))
+                        	if(methods=="GET"){
+                        	$.get('{% url "interface_get" %}', {"url":url}, function(ret){
+     							 console.log("ff");
+     							// alert($("#url").val())
+     							 $("#result").val(ret)
+ 							 })
+ 							 }else{
+ 							 	alert("哥们，你是POST请求,我还没准备好~~~")
+ 							 }
+
+                   });
+})
 </script>
 
 

@@ -51,17 +51,16 @@ window.onload = function() {
 </script>
 	<div id="my_menu" class="sdmenu">
 	<div >
-		<span>数据服务</span>
-		<a href="{% url 'consultation' %}">咨询接口</a>
-		<a href="{% url 'quotation' %}">牛人实盘</a>
+		<span>大数据服务组</span>
+		 {% for item in menu_bigdata %}
+		  <a href=/app/consultation/?name={{item.ProjectName}}>{{item.ProjectName}}</a>
+         {% endfor %}
 	</div>
     <div >
-		<span>证券APP</span>
-		<a href="{% url 'data' %}">调试</a>
-	</div>
-      <div >
-		<span>数据监控</span>
-		<a href="{% url 'memory_management' %}">内存监控</a>
+		<span>APP组</span>
+		 {% for item in menu_app %}
+		  <a href=/app/consultation/?name={{item.ProjectName}}>{{item.ProjectName}}</a>
+         {% endfor %}
 	</div>
     <div >
 		<span>后台配置</span>
@@ -102,8 +101,8 @@ window.onload = function() {
 
       <table class="table table-bordered" >
      <tr>
-       <td width="12%" align="right" nowrap="nowrap" bgcolor="#f1f1f1">业务线：</td>
-       <td width="38%"><input type="text" name="business" id="input1" class="span1-5" value="{{item.business}}" />
+       <td width="12%" align="right" nowrap="nowrap" bgcolor="#f1f1f1">项目名称：</td>
+       <td width="38%"><input type="text" name="business"  class="span1-5" value="{{item.business}}" disabled="false"/>
        <input type="hidden" name="id" id="input1" class="span1-5" value="{{item.id}}" />
        </td>
        <td width="12%" align="right" nowrap="nowrap" bgcolor="#f1f1f1">责任人：</td>

@@ -51,23 +51,22 @@ window.onload = function() {
 
 <div id="my_menu" class="sdmenu">
 	<div >
-		<span>数据服务</span>
-		<a href="{% url 'consultation' %}">咨询接口</a>
+		<span>大数据服务组</span>
+		 {% for item in menu_bigdata %}
+		  <a href=/app/consultation/?name={{item.ProjectName}}>{{item.ProjectName}}</a>
+         {% endfor %}
 	</div>
     <div >
-		<span>证券APP</span>
-		<a href="{% url 'data' %}">调试</a>
-	</div>
-      <div >
-		<span>数据监控</span>
-		<a href="{% url 'memory_management' %}">内存监控</a>
+		<span>APP组</span>
+		 {% for item in menu_app %}
+		  <a href=/app/consultation/?name={{item.ProjectName}}>{{item.ProjectName}}</a>
+         {% endfor %}
 	</div>
      <div >
 		<span>后台配置</span>
 		<a href="{% url 'interface' %}">接口信息配置</a>
 		<a href="{% url 'personnel' %}">人员信息配置</a>
 		<a href="{% url 'project' %}">项目信息配置</a>
-		<a href="{% url 'interface_config_qu' %}">接口信息相关</a>
 	</div>
     </div>
 
@@ -128,10 +127,14 @@ window.onload = function() {
                      <button class="btn btn-info" data-dismiss="modal" aria-hidden="true" style="width:80px">取消</button> 
 				</div>
 			</div>
-     <table class="table table-bordered table-striped table-hover">
+      <div class="alert">
+          <button type="button" class="close" data-dismiss="alert">&times;</button>
+              温馨提示：添加接口配置前请先添加项目信息配置
+      </div>
+         <table class="table table-bordered table-striped table-hover">
      <tbody>
        <tr align="center">
-           <td nowrap="nowrap"><strong>业务名称</strong></td>
+           <td nowrap="nowrap"><strong>项目名称</strong></td>
            <td nowrap="nowrap"><strong>接口名称</strong></td>
            <td nowrap="nowrap"><strong>接口描述</strong></td>
            <td><strong>请求方式</strong></td>
@@ -151,7 +154,7 @@ window.onload = function() {
          <td nowrap="nowrap" title="{{item.interfaceAdress}}"><div style="width:100px;overflow-x:hidden;overflow-y:hidden;">{{item.interfaceAdress}}</div></td>
          <td nowrap="nowrap" title="{{item.interfaceBody}}"><div style="width:100px;overflow-x:hidden;overflow-y:hidden;">{{item.interfaceBody}}</div></td>
          <td nowrap="nowrap">{{item.responsible}}</td>
-         <td nowrap="nowrap"><a href="{%url 'interface_delete' item.id %}">删除</a> <a href="{%url 'interface_edit' item.id %}">编辑</a><a href="{%url 'interface_request' item.id %}">执行</a></td>
+         <td nowrap="nowrap"><a href="{%url 'interface_edit' item.id %}">编辑</a>&nbsp;<a href="{%url 'interface_delete' item.id %}" onclick="return confirm('确认删除吗？')">删除</a>&nbsp;<a href="{%url 'interface_copy' item.id %}">复制</a></td>
        </tr>
        {% endfor %}
      </tbody>

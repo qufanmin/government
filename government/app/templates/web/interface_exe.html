@@ -9,6 +9,7 @@
 <script type="text/javascript" src="{% static 'js/jquery1.9.0.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/sdmenu.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/csrf.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/laydate/laydate.js' %}"></script>
 
 </head>
@@ -52,8 +53,8 @@ window.onload = function() {
 	<div id="my_menu" class="sdmenu">
 	<div >
 		<span>数据服务</span>
-		<a href="{% url 'consultation' %}">咨询接口</a>
-		<a href="{% url 'quotation' %}">牛人实盘</a>
+		<a href="{% url 'consultation' %}">接口执行</a>
+		<a href="{% url 'quotation' %}">接口用例</a>
 	</div>
     <div >
 		<span>证券APP</span>
@@ -101,15 +102,15 @@ window.onload = function() {
       {% csrf_token %}
 <!-- 开始-->
         {% for item in data %}
-        <input type="text" name="methods" placeholder="请求方式"><input type="submit" value="发送"></br>
+        <input type="text" name="methods" placeholder="请求方式"><input type="submit" value="发送"><input id="btn_data" type="button" value="发送"></br>
         <input type="hidden" name="id" value="{{item.id}}">
 		<textarea  name="url" placeholder="请求地址" style="margin: 0px 0px 10px; height: 24px; width: 500px;">{{item.requestAdress}}</textarea></br>
         <input type="text" name="header" placeholder="请求头" value={{item.requestHeader}}></br>
-        <textarea name="body" placeholder="请求体" style="margin: 0px 0px 10px; height: 340px; width: 500px;">{{item.requestBody}}</textarea>
+        <textarea name="body" id="body" placeholder="请求体" style="margin: 0px 0px 10px; height: 340px; width: 500px;">{{item.requestBody}}</textarea>
         <!-- 结束-->
          {% endfor %}
 	</form>
-     <textarea placeholder="返回结果" style="margin: 0px 0px 10px; height: 340px; width: 500px;">{{ responsedata }}</textarea>
+     <textarea id="result" placeholder="返回结果" style="margin: 0px 0px 10px; height: 340px; width: 500px;">{{ responsedata }}</textarea>
    </div>
                <div class="alert">
       <button type="button" class="close" data-dismiss="alert">&times;</button>
@@ -129,7 +130,23 @@ window.onload = function() {
 laydate.skin('molv');
 laydate({elem: '#Calendar'});
 }();
- 
+ $(document).ready(function(){
+ //var data=$.trim($("#body").val())
+ var data="123"
+             $("#btn_data").bind("click",
+                 function() {
+                       if($.trim($("#body").val())=="")
+                        	{alert("请输入请求体");}
+                        else{
+                        	//下面是ajax
+                        	$.post('{% url "interface_exe_request" %}',{"data":data}, function(ret){
+     							 console.log(ret);
+     							 $("#result").val(ret)
+ 							 })
+                        }
+                   });
+
+});
 </script>
 
 

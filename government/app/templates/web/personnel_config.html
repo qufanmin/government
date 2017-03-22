@@ -51,18 +51,16 @@ window.onload = function() {
 
 <div id="my_menu" class="sdmenu">
 	<div >
-		<span>数据服务</span>
-		<a href="{% url 'data' %}">咨询业务</a>
-		<a href="{% url 'data' %}">牛人实盘</a>
-		<a href="{% url 'data' %}">行情信息</a>
+		<span>大数据服务组</span>
+		 {% for item in menu_bigdata %}
+		  <a href=/app/consultation/?name={{item.ProjectName}}>{{item.ProjectName}}</a>
+         {% endfor %}
 	</div>
     <div >
-		<span>证券APP</span>
-		<a href="{% url 'data' %}">调试</a>
-	</div>
-      <div >
-		<span>数据监控</span>
-		<a href="{% url 'memory_management' %}">内存监控</a>
+		<span>APP组</span>
+		 {% for item in menu_app %}
+		  <a href=/app/consultation/?name={{item.ProjectName}}>{{item.ProjectName}}</a>
+         {% endfor %}
 	</div>
     <div >
 		<span>后台配置</span>

@@ -51,17 +51,16 @@ window.onload = function() {
 </script>
 	<div id="my_menu" class="sdmenu">
 	<div >
-		<span>数据服务</span>
-		<a href="{% url 'consultation' %}">咨询接口</a>
-		<a href="{% url 'quotation' %}">牛人实盘</a>
+		<span>大数据服务组</span>
+		 {% for item in menu_bigdata %}
+		  <a href=/app/consultation/?name={{item.ProjectName}}>{{item.ProjectName}}</a>
+         {% endfor %}
 	</div>
     <div >
-		<span>证券APP</span>
-		<a href="{% url 'data' %}">调试</a>
-	</div>
-      <div >
-		<span>数据监控</span>
-		<a href="{% url 'memory_management' %}">内存监控</a>
+		<span>APP组</span>
+		 {% for item in menu_app %}
+		  <a href=/app/consultation/?name={{item.ProjectName}}>{{item.ProjectName}}</a>
+         {% endfor %}
 	</div>
     <div >
 		<span>后台配置</span>
@@ -90,30 +89,39 @@ window.onload = function() {
   接口数据录入
 </ul>
    
-   <div class="title_right"><strong>发货单填写</strong></div>
+   <div class="title_right"><strong>数据接口填写</strong></div>
          <div class="alert">
             <button type="button" class="close" data-dismiss="alert">&times;</button>
             温馨提示：接口对接信息录入
        </div>
-<form method="post" action="/app/interface_add/">
+
+
+<form action="{% url 'interface_add' %}"  method="POST">
      {% csrf_token %}
 <div style="width:900px;margin:auto;">
+
       <table class="table table-bordered" >
      <tr>
-       <td width="12%" align="right" nowrap="nowrap" bgcolor="#f1f1f1">业务线：</td>
-       <td width="38%"><input type="text" name="business" id="input1" class="span1-5"  /></td>
+       <td width="12%" align="right" nowrap="nowrap" bgcolor="#f1f1f1">项目名称：</td>
+       <td width="38%"><select type="text" name="business"  class="span1-5" />
+           {% for item in data %}
+            <option value="{{ item.ProjectName }}" style="font-size:9pt;color=red">{{ item.ProjectName }}</option>
+           {% endfor %}
+           </select>
+       <input type="hidden" name="id" id="input1" class="span1-5"/>
+       </td>
        <td width="12%" align="right" nowrap="nowrap" bgcolor="#f1f1f1">责任人：</td>
-       <td width="38%"><input type="text" name="responsible" id="input" class="span1-5"  /></td>
+       <td width="38%"><input type="text" name="responsible" id="input" class="span1-5"/></td>
      </tr>
      <tr>
        <td width="12%" align="right" nowrap="nowrap" bgcolor="#f1f1f1">接口名称：</td>
-       <td width="38%"><input type="text" name="interfaceName" id="input2" class="span1-5"  /></td>
+       <td width="38%"><input type="text" name="interfaceName" id="input2" class="span1-5"/></td>
        <td align="right" nowrap="nowrap" bgcolor="#f1f1f1">接口描述：</td>
-       <td><input type="text" name="description" id="description" class="span1-5"  /></td>
+       <td><input type="text" name="description" id="description" class="span1-5"/></td>
      </tr>
      <tr>
        <td align="right" bgcolor="#f1f1f1">请求方式：</td>
-       <td><input type="text" name="methods" id="methods" class="span1-5"  /></td>
+       <td><input type="text" name="methods" id="methods" class="span1-5" /></td>
        <td align="right" nowrap="nowrap" bgcolor="#f1f1f1">IP地址：</td>
        <td><input type="text" name="IP" id="input4" class="span1-5"  /></td>
      </tr>
@@ -130,6 +138,7 @@ window.onload = function() {
        <td colspan="3"><textarea name="interfaceDetails" id="input11" class="span10"></textarea></td>
      </tr>
    </table>
+
       <table  class="margin-bottom-20  table no-border" >
           <tr>
               <td class="text-center"><input type="submit" value="确定" class="btn btn-info  " style="width:80px;" /></td>

@@ -10,7 +10,7 @@ class ProjectConfigureForm(forms.ModelForm):
         super(ProjectConfigureForm, self).__init__(*args, **kwargs)
     businessName = forms.CharField(
         required=True,
-        label=u"用户名",
+        label=u"业务线",
         error_messages={'required': u'请输入业务线名称'},
         widget=forms.TextInput(
             attrs={

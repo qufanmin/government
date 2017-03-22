@@ -1,7 +1,7 @@
 # coding:utf-8
 from django.shortcuts import render
 from django.http import HttpResponse
-from app.models import LeakCanaryInfo, InterfaceConfigure,Interfaceqqu,Interface_add
+from app.models import LeakCanaryInfo, InterfaceConfigure,Interfaceqqu,Interface_add,ProjectConfigure
 from django.core import serializers
 import json
 
@@ -62,14 +62,18 @@ def interface_config(request):
         else:
             curPage -= 1
     start = (curPage - 1) * 10
-    end = start + 10
+    end = start + 15
     print start,end,curPage,allPage
     if deviceModel != "":
         data = Interface_add.objects.filter(deviceModel=deviceModel).order_by("-id")[start:end]
         allPostCounts = Interface_add.objects.filter(deviceModel=deviceModel).order_by("-id").count()
+        menu_app=ProjectConfigure.objects.filter(businessName=u'APP组').values('ProjectName').distinct()
+        menu_bigdata=ProjectConfigure.objects.filter(businessName=u'大数据服务组').values('ProjectName').distinct()
     else:
         data = Interface_add.objects.all().order_by("-id")[start:end]
         allPostCounts = Interface_add.objects.all().order_by("-id").count()
+        menu_app=ProjectConfigure.objects.filter(businessName=u'APP组').values('ProjectName').distinct()
+        menu_bigdata=ProjectConfigure.objects.filter(businessName=u'大数据服务组').values('ProjectName').distinct()
     if curPage == 1 and allPage == 1:
         print allPostCounts
         allPage = allPostCounts / 10
@@ -77,7 +81,7 @@ def interface_config(request):
         if remainPost > 0:
             allPage += 1
     print '&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&', data
-    return render(request, 'web/interface_config.html', {'data': data, 'curPage': curPage,'allPage':allPage})
+    return render(request, 'web/interface_config.html', {'data': data, 'curPage': curPage,'allPage':allPage,'menu_bigdata':menu_bigdata,'menu_app':menu_app})
 
 
 def memory_info(request):

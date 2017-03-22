@@ -2,7 +2,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from government.common.db_config import db_conn
-
+from app.models import ProjectConfigure, InterfaceConfigure,Interfaceqqu,Interface_add
 
 def login(request):
     string = u"我在自强学堂学习Django，用它来建网站"
@@ -38,7 +38,9 @@ def interface_config(request):
 def personnel_config(request):
     string = u"我在自强学堂学习Django，用它来建网站"
     # return HttpResponse(u"调试测试")
-    return render(request, 'web/personnel_config.html', {'string': string})
+    menu_app=ProjectConfigure.objects.filter(businessName=u'APP组').values('ProjectName').distinct()
+    menu_bigdata=ProjectConfigure.objects.filter(businessName=u'大数据服务组').values('ProjectName').distinct()
+    return render(request, 'web/personnel_config.html', {'string': string,'menu_bigdata':menu_bigdata,'menu_app':menu_app})
 
 
 def project_add(request):

@@ -10,8 +10,17 @@
 <script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/sdmenu.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/laydate/laydate.js' %}"></script>
+    <script>
+        //限制表格内容的显示字数
+    function cutStr(len){
+        var obj=document.getElementById('table1').getElementsByTagName('td');
+        for (i=0;i<obj.length;i++){
+            obj[i].innerHTML=obj[i].innerHTML.substring(0,len)+'…';
+        }
+    }
+    </script>
 </head>
-<body>
+<body onload="cutStr(10)">
 <div class="header">
 	 <div class="logo"><img  src="{% static 'img/mobile.png' %}" /></div>
 				<div class="header-right">
@@ -48,17 +57,16 @@ window.onload = function() {
 
 <div id="my_menu" class="sdmenu">
 	<div >
-		<span>数据服务</span>
-		<a href="{% url 'consultation' %}">资讯业务</a>
-		<a href="{% url 'quotation' %}">行情信息</a>
+		<span>大数据服务组</span>
+		 {% for item in menu_bigdata %}
+		  <a href=/app/consultation/?name={{item.ProjectName}}>{{item.ProjectName}}</a>
+         {% endfor %}
 	</div>
     <div >
-		<span>证券APP</span>
-		<a href="{% url 'data' %}">调试</a>
-	</div>
-    <div >
-		<span>数据监控</span>
-		<a href="{% url 'memory_management' %}">内存监控</a>
+		<span>APP组</span>
+		 {% for item in menu_app %}
+		  <a href=/app/consultation/?name={{item.ProjectName}}>{{item.ProjectName}}</a>
+         {% endfor %}
 	</div>
         <div >
 		<span>后台配置</span>
@@ -98,23 +106,25 @@ window.onload = function() {
      	<td class="text-center"><input type="button" value="查询" class="btn btn-info " style="width:80px;" /></td>
      </tr>
  </table>
-       <table class="table table-bordered">
+       <table class="table table-bordered" id="table1">
          <tr>
            <td align="center" nowrap="nowrap" bgcolor="#f1f1f1"><strong>接口名称</strong></td>
            <td align="center" nowrap="nowrap" bgcolor="#f1f1f1"><strong>业务描述</strong></td>
            <td align="center" nowrap="nowrap" bgcolor="#f1f1f1"><strong>请求方式</strong></td>
            <td align="center" nowrap="nowrap" bgcolor="#f1f1f1"><strong>IP地址</strong></td>
            <td align="center" nowrap="nowrap" bgcolor="#f1f1f1"><strong>责任人</strong></td>
+           <td align="center" nowrap="nowrap" bgcolor="#f1f1f1"><strong>结果</strong></td>
            <td align="center" nowrap="nowrap" bgcolor="#f1f1f1"><strong>操作</strong></td>
          </tr>
            {% for item in data %}
            <tr>
-           <td align="center"><strong>{{item.businessDescribe}}</strong></td>
-           <td align="center">{{item.InterfaceName}}</td>
-           <td align="center">{{item.InterfaceName}}</td>
-           <td align="center">{{item.InterfaceName}}</td>
-           <td align="center">{{item.AdministrationName }}</td>
-           <td align="center"><a href="/app/api_details/?id={{item.id}}">查看详情</a></td>
+           <td align="center"><strong>{{item.interfaceName}}</strong></td>
+           <td align="center" title="{{item.interfaceDetails}}"><div style="width:100px;height: 20px;overflow-x:hidden;overflow-y:hidden;overflow:hidden;text-overflow:ellipsis;">{{item.interfaceDetails}}</div></td>
+           <td align="center">{{item.methods}}</td>
+           <td align="center">{{item.IP}}</td>
+           <td align="center">{{item.responsible }}</td>
+           <td align="center">成功</td>
+           <td align="center"><div style="width:100px;height: 20px;overflow-x:hidden;overflow-y:hidden;"><a href="{%url 'interface_request' item.id %}">执行</a></div></td>
            {% endfor %}
          </tr>
        </table>

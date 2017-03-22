@@ -10,6 +10,7 @@ from government.common import bigdata_api
 import json
 import requests
 import urllib2
+from .forms import InterfaceForm
 
 def project_config(request):
     try:
@@ -38,21 +39,27 @@ def project_config(request):
     if businessName != "":
         data = ProjectConfigure.objects.filter(businessName=businessName).order_by("-id")[start:end]
         allPostCounts = ProjectConfigure.objects.filter(businessName=businessName).order_by("-id").count()
+        menu_app=ProjectConfigure.objects.filter(businessName=u'APP组').values('ProjectName').distinct()
+        menu_bigdata=ProjectConfigure.objects.filter(businessName=u'大数据服务组').values('ProjectName').distinct()
     else:
         data = ProjectConfigure.objects.all().order_by("-id")[start:end]
         allPostCounts = ProjectConfigure.objects.all().order_by("-id").count()
+        menu_app=ProjectConfigure.objects.filter(businessName=u'APP组').values('ProjectName').distinct()
+        menu_bigdata=ProjectConfigure.objects.filter(businessName=u'大数据服务组').values('ProjectName').distinct()
     if curPage == 1 and allPage == 1:
         print allPostCounts
         allPage = allPostCounts / 10
         remainPost = allPostCounts % 10
         if remainPost > 0:
             allPage += 1
-    return render(request, 'web/project_config.html', {'data': data, 'curPage': curPage,'allPage':allPage})
+    return render(request, 'web/project_config.html', {'data': data, 'curPage': curPage,'allPage':allPage,'menu_bigdata':menu_bigdata,'menu_app':menu_app})
 
 
 @csrf_exempt
 def project_add(request):
     error = []
+    menu_app=ProjectConfigure.objects.filter(businessName=u'APP组').values('ProjectName').distinct()
+    menu_bigdata=ProjectConfigure.objects.filter(businessName=u'大数据服务组').values('ProjectName').distinct()
     if request.method == 'POST':
         form = ProjectConfigureForm(request.POST)
         if form.is_valid():
@@ -60,14 +67,17 @@ def project_add(request):
             business = data['businessName']
             project = data['ProjectName']
             assembly = data['assemblyName']
-            data = ProjectConfigure(businessName=business, ProjectName=project, assemblyName=assembly)
+            ProjectAdministration=data['ProjectAdministration']
+            SoftwareAdministration=data['SoftwareAdministration']
+            TestAdministration=data['TestAdministration']
+            data = ProjectConfigure(businessName=business, ProjectName=project, assemblyName=assembly,ProjectAdministration=ProjectAdministration,SoftwareAdministration=SoftwareAdministration,TestAdministration=TestAdministration)
             data.save()
             return HttpResponseRedirect('/app/project_config/')
         else:
             return render_to_response("web/project_add.html", locals(), RequestContext(request))
     else:
         form = ProjectConfigureForm()
-        return render_to_response('web/project_add.html', {'form': form}, context_instance=RequestContext(request))
+        return render_to_response('web/project_add.html', {'form': form,'menu_bigdata':menu_bigdata,'menu_app':menu_app}, context_instance=RequestContext(request))
 
 
 @csrf_exempt
@@ -107,7 +117,10 @@ def interface_add(request):
         data.save()
         return HttpResponseRedirect('/app/interface_config/')
     else:
-        return render(request, 'web/interface_add.html', {'string': string})
+        menu_app=ProjectConfigure.objects.filter(businessName=u'APP组').values('ProjectName').distinct()
+        menu_bigdata=ProjectConfigure.objects.filter(businessName=u'大数据服务组').values('ProjectName').distinct()
+        data=ProjectConfigure.objects.all()
+        return render(request, 'web/interface_add.html',{'data':data,'menu_bigdata':menu_bigdata,'menu_app':menu_app})
 #删除接口
 def interface_delete(request,id):
     entry = get_object_or_404(Interface_add, pk=int(id))
@@ -116,7 +129,7 @@ def interface_delete(request,id):
 #编辑接口
 def interface_edit(request,id):
     if request.method=='POST':
-        business=request.POST['business']
+#        business=request.POST['business']
         responsible=request.POST['responsible']
         interfaceName=request.POST['interfaceName']
         description=request.POST['description']
@@ -125,14 +138,37 @@ def interface_edit(request,id):
         interfaceAdress=request.POST['interfaceAdress']
         interfaceBody=request.POST['interfaceBody']
         interfaceDetails=request.POST['interfaceDetails']
-        Interface_add.objects.filter(id=int(id)).update(business=business,responsible=responsible,interfaceName=interfaceName,description=description,methods=methods,IP=IP,interfaceAdress=interfaceAdress,interfaceBody=interfaceBody,interfaceDetails=interfaceDetails)
+        Interface_add.objects.filter(id=int(id)).update(responsible=responsible,interfaceName=interfaceName,description=description,methods=methods,IP=IP,interfaceAdress=interfaceAdress,interfaceBody=interfaceBody,interfaceDetails=interfaceDetails)
         return HttpResponseRedirect('/app/interface_config')
     else:
         id=int(id)
         data=Interface_add.objects.filter(id=id)
-        return render(request, 'web/interface_edit.html',{'data':data})
+        menu_app=ProjectConfigure.objects.filter(businessName=u'APP组').values('ProjectName').distinct()
+        menu_bigdata=ProjectConfigure.objects.filter(businessName=u'大数据服务组').values('ProjectName').distinct()
+        return render(request, 'web/interface_edit.html',{'data':data,'menu_bigdata':menu_bigdata,'menu_app':menu_app})
+#复制接口
+def interface_copy(request,id):
+    id=int(id)
+    data=Interface_add.objects.filter(id=id)
+    for item in data:
+        business=item.business
+        responsible=item.responsible
+        interfaceName=item.interfaceName
+        description=item.description
+        methods=item.methods
+        IP=item.IP
+        interfaceAdress=item.interfaceAdress
+        interfaceBody=item.interfaceBody
+        interfaceDetails=item.interfaceDetails
+        data=Interface_add(business=business,responsible=responsible,interfaceName=interfaceName,description=description,methods=methods,IP=IP,interfaceAdress=interfaceAdress,interfaceBody=interfaceBody,interfaceDetails=interfaceDetails)
+        data.save()
+    return HttpResponseRedirect('/app/interface_config')
+
+
 #执行接口，发送请求
 def interface_request(request,id):
+    menu_app=ProjectConfigure.objects.filter(businessName=u'APP组').values('ProjectName').distinct()
+    menu_bigdata=ProjectConfigure.objects.filter(businessName=u'大数据服务组').values('ProjectName').distinct()
     if request.method=='POST':
         id=int(request.POST['id'])
         urldata=request.POST['url']
@@ -145,16 +181,27 @@ def interface_request(request,id):
         data=Interface_add.objects.filter(id=id)
         print id,data,responsedata
 #       return render(request, 'web/interface_exe.html',{"data":json.dumps(responsedata.json())},RequestContext(request))
-        return render(request, 'web/interface_request.html',{'data':data,'responsedata':responsedata.text})
+        return render(request, 'web/interface_request.html',{'data':data,'responsedata':responsedata.text,'menu_bigdata':menu_bigdata,'menu_app':menu_app})
     else:
         id=int(id)
         data=Interface_add.objects.filter(id=id)
-        return render(request, 'web/interface_request.html',{'data':data})
+
+        return render(request, 'web/interface_request.html',{'data':data,'menu_bigdata':menu_bigdata,'menu_app':menu_app})
+def interface_get(request):
+    url=request.GET['url']
+    print url
+    responsedata=requests.get(url)
+    return HttpResponse(responsedata.text)
 def consultation(request):
     string = u"我在自强学堂学习Django，用它来建网站"
     # return HttpResponse(u"调试测试")
-    data = InterfaceConfigure.objects.filter(businessName=u"咨询业务").order_by("-id")
-    return render(request, 'web/Consultation.html', {'data': data})
+#    data = InterfaceConfigure.objects.filter(businessName=u"咨询业务").order_by("-id")
+    name=request.GET['name']
+    print name
+    data=Interface_add.objects.filter(business=name)[:20]
+    menu_app=ProjectConfigure.objects.filter(businessName=u'APP组').values('ProjectName').distinct()
+    menu_bigdata=ProjectConfigure.objects.filter(businessName=u'大数据服务组').values('ProjectName').distinct()
+    return render(request, 'web/Consultation.html', {'data': data,'menu_bigdata':menu_bigdata,'menu_app':menu_app})
 
 
 def quotation(request):
@@ -195,19 +242,25 @@ def interface_exe(request,id):
     return render(request, 'web/interface_exe.html',{"data":data})
 #处理post请求
 def interface_exe_request(request):
-    id=request.POST['id']
-    urldata=request.POST['url']
-    para1=request.POST['header']
-    para2= request.POST['body']
-    payload=json.loads(para2)
-    print payload
-    print type(payload)
-    responsedata=requests.post(urldata,data=payload)
-    id=int(id)
-    data=Interfaceqqu.objects.filter(id=id)
-    print id
+    if request.method=="POST":
+        data=request.POST
+        print data
+        return HttpResponse("一直大黄狗")
+#    id=request.POST['id']
+#    urldata=request.POST['url']
+#    para1=request.POST['header']
+#    para2= request.POST['body']
+#    payload=json.loads(para2)
+#    print payload
+#    print type(payload)
+#    responsedata=requests.post(urldata,data=payload)
+#    id=int(id)
+#    data=Interfaceqqu.objects.filter(id=id)
+#    print id
 #    return render(request, 'web/interface_exe.html',{"data":json.dumps(responsedata.json())},RequestContext(request))
-    return render(request, 'web/interface_exe.html',{"responsedata":responsedata.text,"data":data})
+    else:
+     return render(request, 'web/interface_exe.html')#,{"responsedata":responsedata.text,"data":data}
+
 #删除接口
 @csrf_exempt
 def interface_delete_qu(request,id):
