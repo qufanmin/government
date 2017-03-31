@@ -140,20 +140,3 @@ class InterfaceConfigureForm(forms.ModelForm):
             }
         ),
     )
-#以下是屈凡民添加
-class InterfaceForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        super(InterfaceForm, self).__init__(*args, **kwargs)
-    businessName = forms.CharField(
-        required=True,
-        label=u"业务名称",
-        error_messages={'required': u'业务线名称为空'},
-        widget=forms.TextInput(
-            attrs={
-                "type": "text",
-                "name": "input",
-                "id": "businessName",
-                "class": "span1-5"
-            }
-        ),
-    )

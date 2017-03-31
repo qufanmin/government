@@ -5,12 +5,13 @@ from app.project_from import ProjectConfigureForm
 from app.models import ProjectConfigure, InterfaceConfigure,Interfaceqqu,Interface_add
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
-from django.core.urlresolvers import reverse
-from government.common import bigdata_api
-import json
+import json,urllib
 import requests
 import urllib2
-from .forms import InterfaceForm
+import copy
+import datetime
+from django.db.models import Q
+from app.forms import InterfaceForm
 
 def project_config(request):
     try:
@@ -76,6 +77,11 @@ def project_add(request):
         else:
             return render_to_response("web/project_add.html", locals(), RequestContext(request))
     else:
+        datas=ProjectConfigure.objects.all()
+        data=[]
+        for item in datas:
+            select=(item.ProjectName,item.ProjectName)
+            data.append(select)
         form = ProjectConfigureForm()
         return render_to_response('web/project_add.html', {'form': form,'menu_bigdata':menu_bigdata,'menu_app':menu_app}, context_instance=RequestContext(request))
 
@@ -99,28 +105,21 @@ def project_delete(request,id):
 
 
 def interface_add(request):
-    string = u"我在自强学堂学习Django，用它来建网站"
+    errors=[]
 #添加接口方法，如果post提交数据，保存到数据库，返回配置页面
 # return HttpResponse(u"调试测试")
     if request.method=='POST':
-        business=request.POST['business']
-        responsible=request.POST['responsible']
-        interfaceName=request.POST['interfaceName']
-        description=request.POST['description']
-        methods=request.POST['methods']
-        IP=request.POST['IP']
-        interfaceAdress=request.POST['interfaceAdress']
-        interfaceBody=request.POST['interfaceBody']
-        interfaceDetails=request.POST['interfaceDetails']
-        print business+responsible+interfaceName+description+methods+IP+interfaceAdress+interfaceBody+interfaceDetails
-        data=Interface_add(business=business,responsible=responsible,interfaceName=interfaceName,description=description,methods=methods,IP=IP,interfaceAdress=interfaceAdress,interfaceBody=interfaceBody,interfaceDetails=interfaceDetails)
-        data.save()
-        return HttpResponseRedirect('/app/interface_config/')
+        form=InterfaceForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect('/app/interface_config/')
+        else:
+            return render_to_response( 'web/interface_add.html',locals(),RequestContext(request))
     else:
         menu_app=ProjectConfigure.objects.filter(businessName=u'APP组').values('ProjectName').distinct()
         menu_bigdata=ProjectConfigure.objects.filter(businessName=u'大数据服务组').values('ProjectName').distinct()
-        data=ProjectConfigure.objects.all()
-        return render(request, 'web/interface_add.html',{'data':data,'menu_bigdata':menu_bigdata,'menu_app':menu_app})
+        form=InterfaceForm()
+        return render(request, 'web/interface_add.html',locals(), RequestContext(request))
 #删除接口
 def interface_delete(request,id):
     entry = get_object_or_404(Interface_add, pk=int(id))
@@ -138,7 +137,8 @@ def interface_edit(request,id):
         interfaceAdress=request.POST['interfaceAdress']
         interfaceBody=request.POST['interfaceBody']
         interfaceDetails=request.POST['interfaceDetails']
-        Interface_add.objects.filter(id=int(id)).update(responsible=responsible,interfaceName=interfaceName,description=description,methods=methods,IP=IP,interfaceAdress=interfaceAdress,interfaceBody=interfaceBody,interfaceDetails=interfaceDetails)
+        interfaceHead=request.POST['interfaceHead']
+        Interface_add.objects.filter(id=int(id)).update(responsible=responsible,interfaceName=interfaceName,description=description,methods=methods,IP=IP,interfaceAdress=interfaceAdress,interfaceBody=interfaceBody,interfaceDetails=interfaceDetails,interfaceHead=interfaceHead)
         return HttpResponseRedirect('/app/interface_config')
     else:
         id=int(id)
@@ -148,23 +148,10 @@ def interface_edit(request,id):
         return render(request, 'web/interface_edit.html',{'data':data,'menu_bigdata':menu_bigdata,'menu_app':menu_app})
 #复制接口
 def interface_copy(request,id):
-    id=int(id)
-    data=Interface_add.objects.filter(id=id)
-    for item in data:
-        business=item.business
-        responsible=item.responsible
-        interfaceName=item.interfaceName
-        description=item.description
-        methods=item.methods
-        IP=item.IP
-        interfaceAdress=item.interfaceAdress
-        interfaceBody=item.interfaceBody
-        interfaceDetails=item.interfaceDetails
-        data=Interface_add(business=business,responsible=responsible,interfaceName=interfaceName,description=description,methods=methods,IP=IP,interfaceAdress=interfaceAdress,interfaceBody=interfaceBody,interfaceDetails=interfaceDetails)
-        data.save()
+    data=copy.deepcopy(Interface_add.objects.get(pk=int(id)))
+    data.pk=None
+    data.save()
     return HttpResponseRedirect('/app/interface_config')
-
-
 #执行接口，发送请求
 def interface_request(request,id):
     menu_app=ProjectConfigure.objects.filter(businessName=u'APP组').values('ProjectName').distinct()
@@ -192,16 +179,66 @@ def interface_get(request):
     print url
     responsedata=requests.get(url)
     return HttpResponse(responsedata.text)
+def interface_post(request):
+    id=request.POST['id']
+    print id
+    datas=Interface_add.objects.filter(id=int(id))
+    for item in datas:
+        data2=item.interfaceBody
+        headersdb=item.interfaceHead
+        url=item.interfaceAdress
+#    取出数据类型是Unicode
+#    print type(headersdb),headersdb
+    headersdb2=headersdb.encode('utf-8')#Unicode转为str
+#    print type(eval(headersdb2)),headersdb2,eval(headersdb2)
+#    print type(json.loads(headers.encode('utf-8'))),json.loads(headers.encode('utf-8'))
+    headers =eval(headersdb2)#str转为dict，为了urllib2.Request准备请求头{'Content-Type': 'application/json'}
+    data_json=eval(data2.encode('utf-8'))
+    print type(headers),headers
+    if headers['Content-type']=='application/json':
+        data_json=json.dumps(data_json)
+    url=url.encode('utf-8')
+    '''
+    try:
+        request = urllib2.Request(url, headers=headers, data=data_json)
+        response = urllib2.urlopen(request)
+        html=response.read()
+        if(response.getcode()==200):
+            Interface_add.objects.filter(id=int(id)).update(interfaceResult='1')
+        else:
+            Interface_add.objects.filter(id=int(id)).update(interfaceResult='0')
+    except urllib2.HTTPError, e:
+        print e.code
+    '''
+    response=requests.post(url,headers=headers,data=data_json)
+    if(response.status_code==200):
+            Interface_add.objects.filter(id=int(id)).update(interfaceResult='1')
+    else:
+            Interface_add.objects.filter(id=int(id)).update(interfaceResult='0')
+    return HttpResponse(response)
+#接口细分页面
 def consultation(request):
     string = u"我在自强学堂学习Django，用它来建网站"
     # return HttpResponse(u"调试测试")
 #    data = InterfaceConfigure.objects.filter(businessName=u"咨询业务").order_by("-id")
     name=request.GET['name']
-    print name
-    data=Interface_add.objects.filter(business=name)[:20]
+    data=Interface_add.objects.filter(business=name).order_by('-id')[:20]
     menu_app=ProjectConfigure.objects.filter(businessName=u'APP组').values('ProjectName').distinct()
     menu_bigdata=ProjectConfigure.objects.filter(businessName=u'大数据服务组').values('ProjectName').distinct()
-    return render(request, 'web/Consultation.html', {'data': data,'menu_bigdata':menu_bigdata,'menu_app':menu_app})
+    return render(request, 'web/Consultation.html', {'data': data,'menu_bigdata':menu_bigdata,'menu_app':menu_app,'business':name})
+#细分页面搜索
+def search(request):
+    menu_app=ProjectConfigure.objects.filter(businessName=u'APP组').values('ProjectName').distinct()
+    menu_bigdata=ProjectConfigure.objects.filter(businessName=u'大数据服务组').values('ProjectName').distinct()
+    if request.method=='POST':
+        interfaceName=request.POST['interfaceName']
+        responsible=request.POST['responsible']
+        projectname=request.POST['projectname']
+        data=Interface_add.objects.filter(interfaceName__icontains=interfaceName,responsible__icontains=responsible).order_by('-id')[:50]
+        return render(request, 'web/Consultation.html',locals())
+    else:
+        return HttpResponse('get...')
+
 
 
 def quotation(request):

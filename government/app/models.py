@@ -45,7 +45,8 @@ class ProjectConfigure(models.Model):
     TestAdministration = models.CharField(max_length=255, null=True)
     describe = models.TextField(null=True)
     info = models.TextField(null=True)
-
+    def __unicode__(self):
+        return self. ProjectName
 
 # 项目人员配置
 class PersonnelConfigure(models.Model):
@@ -72,7 +73,9 @@ class Interface_add(models.Model):
     methods=models.CharField(max_length=255, null=True)
     IP=models.CharField(max_length=255, null=True)
     interfaceAdress=models.CharField(max_length=255, null=True)
-    interfaceBody=models.CharField(max_length=1000, null=True)
+    interfaceBody=models.CharField(max_length=2000, null=True)
     interfaceDetails=models.CharField(max_length=255, null=True)
-def __unicode__(self):
-	return self.business
+    interfaceHead=models.CharField(max_length=100,null=True)
+    interfaceResult=models.CharField(max_length=10,default=2)
+    def __unicode__(self):
+	    return self.business

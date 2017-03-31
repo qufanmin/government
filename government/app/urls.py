@@ -43,4 +43,6 @@ urlpatterns = [
     url(r'^interface_exe_request/', dataservice_views.interface_exe_request, name='interface_exe_request'),
     url(r'^interface_delete_qu-(\d+)/$', dataservice_views.interface_delete_qu, name='interface_delete_qu'),
     url(r'^interface_get/$', dataservice_views.interface_get, name='interface_get'),
+    url(r'^interface_post/$', dataservice_views.interface_post, name='interface_post'),
+    url(r'^search/$', dataservice_views.search, name='search'),
 ]

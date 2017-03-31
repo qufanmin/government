@@ -12,6 +12,7 @@
 <script type="text/javascript" src="{% static 'js/sdmenu.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/laydate/laydate.js' %}"></script>
 <script type="text/javascript" src="{% static 'dist/jquery.jsonview.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/csrf.js' %}"></script>
 </head>
 
 <body>
@@ -98,21 +99,26 @@ window.onload = function() {
        </div>
 <div style="width:900px;margin:auto;">
 	{% for item in data %}
-	<form class="bs-example bs-example-form" role="form" action="{%url 'interface_request' item.id %}" method="{{item.methods}}">
+	<form id="formid" class="bs-example bs-example-form" role="form" action="{%url 'interface_request' item.id %}" method="{{item.methods}}">
       {% csrf_token %}
 <!-- 开始-->
 
         <input id="methods" type="text" name="methods" placeholder="请求方式" value="{{item.methods}}" disabled="false"><input id="btn_data" type="button" value="发送"></br>
-        <input type="hidden" name="id" value="{{item.id}}">
-		<textarea  id='url' name="url" placeholder="请求地址" style="margin: 0px 0px 10px; height: 24px; width: 500px;">{{item.interfaceAdress}}</textarea></br>
-        <input type="text" name="header" placeholder="请求头" value={{item.requestHeader}}></br>
-        <textarea name="body" placeholder="请求体" style="margin: 0px 0px 10px; height: 340px; width: 500px;">{{item.interfaceBody}}</textarea>
+        <input id="interface_id" type="hidden" name="id" value="{{item.id}}">
+		<textarea  id='url' name="url" placeholder="请求地址" style="margin: 10px 0px 10px; height: 90px; width: 779px;">{{item.interfaceAdress}}</textarea></br>
+        {% if item.interfaceHead %}
+        <input type="text" name="header" placeholder="请求头"  style="margin: 0px 0px 10px;width:200px"value="{{item.interfaceHead}}"></br>
+		{% endif %}
+		{% if item.interfaceBody %}
+        <input id="interfaceBody" name="body" type="hidden" name="id" value="{{item.interfaceBody}}">
+		<div id="interfaceBody_json" style="border:1px solid green;background:yellow;height:auto;min-height:100px;width=898px"></div>
+		{% endif %}
         <!-- 结束-->
 
 	</form>
 	{% endfor %}
-     <textarea id="result" placeholder="返回结果" style="margin: 0px 0px 10px; height: 340px; width: 500px;background:yellow; font-size:20px" >{{ responsedata }}</textarea>
-	<div id="json"></div>
+<!--     <textarea id="result" placeholder="返回结果" style="margin: 0px 0px 10px; height: 340px; width: 500px;background:yellow; font-size:20px" >{{ responsedata }}</textarea> -->
+	<div id="json" style="border:1px solid green;background:yellow;height:auto;min-height:100px;width=898px"></div>
    </div>
                <div class="alert">
       <button type="button" class="close" data-dismiss="alert">&times;</button>
@@ -142,19 +148,30 @@ var methods=$("#methods").val()
                         	var result=$("#result").val()
                         	var json=$.parseJSON(result)
                         	//var json=eval(result)
-                        	$("#json").JSONView(json)
+                        	//$("#json").JSONView(json)
 							console.log(typeof(json))
                         	if(methods=="GET"){
-                        	$.get('{% url "interface_get" %}', {"url":url}, function(ret){
+                        		$.get('{% url "interface_get" %}',
+                        		{"url":url}, function(ret){
      							 console.log("ff");
      							// alert($("#url").val())
      							 $("#result").val(ret)
- 							 })
+     							 $("#json").JSONView(ret)
+ 							 		})
  							 }else{
- 							 	alert("哥们，你是POST请求,我还没准备好~~~")
+ 							 	$.post(
+ 							 	'{% url "interface_post"%}',
+ 							 	{"id":$("#interface_id").val()}, function (ret) {
+     							 $("#result").val(ret)
+     							 $("#json").JSONView(ret)
+ 							 		})
  							 }
 
                    });
+})
+//格式化请求体
+$(document).ready(function(){
+    $("#interfaceBody_json").JSONView($("#interfaceBody").val())
 })
 </script>
 

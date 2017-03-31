@@ -134,6 +134,7 @@ window.onload = function() {
          <table class="table table-bordered table-striped table-hover">
      <tbody>
        <tr align="center">
+           <td nowrap="nowrap"><strong>序号</strong></td>
            <td nowrap="nowrap"><strong>项目名称</strong></td>
            <td nowrap="nowrap"><strong>接口名称</strong></td>
            <td nowrap="nowrap"><strong>接口描述</strong></td>
@@ -146,13 +147,14 @@ window.onload = function() {
          </tr>
        {% for item in data %}
        <tr align="center">
+         <td nowrap="nowrap">{{item.id}}</td>
          <td nowrap="nowrap">{{item.business}}</td>
          <td nowrap="nowrap">{{item.interfaceName}}</td>
          <td nowrap="nowrap">{{item.description}}</td>
          <td nowrap="nowrap">{{item.methods}}</td>
-         <td nowrap="nowrap">{{item.IP}}</td>
+         <td nowrap="nowrap"><div style="width:90px;overflow-x:hidden;overflow-y:hidden;">{{item.IP}}</div></td>
          <td nowrap="nowrap" title="{{item.interfaceAdress}}"><div style="width:100px;overflow-x:hidden;overflow-y:hidden;">{{item.interfaceAdress}}</div></td>
-         <td nowrap="nowrap" title="{{item.interfaceBody}}"><div style="width:100px;overflow-x:hidden;overflow-y:hidden;">{{item.interfaceBody}}</div></td>
+         <td nowrap="nowrap" title="{{item.interfaceBody}}"><div style="width:90px;overflow-x:hidden;overflow-y:hidden;">{{item.interfaceBody}}</div></td>
          <td nowrap="nowrap">{{item.responsible}}</td>
          <td nowrap="nowrap"><a href="{%url 'interface_edit' item.id %}">编辑</a>&nbsp;<a href="{%url 'interface_delete' item.id %}" onclick="return confirm('确认删除吗？')">删除</a>&nbsp;<a href="{%url 'interface_copy' item.id %}">复制</a></td>
        </tr>
