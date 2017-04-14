@@ -1,0 +1,32 @@
+1、本次配置成功所需版本
+2、Python2.7.13  django1.8 Apache2.2 mod_wsgi.so
+3、配置mod_wsgi.so
+mod_wsgi-3.5.ap22.win32-py2.6  表示Apache2.2   windows32位   Python2.6
+mod_wsgi  放在Apache module  模块
+4、修改Apache的配置文件httpd.conf,
+在LoadModule后添加：LoadModule wsgi_module modules/mod_wsgi.so
+最后一行加入：      Include conf/extra/Django.conf
+5、在/conf/extra/下创建Django.conf文件
+6、Django.conf中加入，把路径换成自己的，重启Apache
+NameVirtualHost *:8000
+<VirtualHost *:8000>
+    ServerAdmin admin@TestDjango.com
+    DocumentRoot "D:/soft/djangoproject/government" 
+    ServerName www.TestDjango.com
+    ErrorLog "logs/TestDjango_error.log"
+    CustomLog "logs/TestDjango_access.log" common
+    WSGIScriptAlias / D:/soft/djangoproject/government/government/wsgi.py
+</VirtualHost>
+
+WSGIPythonPath D:/soft/djangoproject/government
+<Directory "D:/soft/djangoproject/government">
+    Options FollowSymLinks
+    AllowOverride None
+    Order allow,deny
+    Allow from all
+</Directory>
+Alias /static D:/soft/djangoproject/government/static
+<Location "/static/">
+    Order allow,deny        
+    Allow from all
+</Location>
