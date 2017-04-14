@@ -150,6 +150,7 @@ def interface_edit(request,id):
 def interface_copy(request,id):
     data=copy.deepcopy(Interface_add.objects.get(pk=int(id)))
     data.pk=None
+    data.interfaceResult='2'
     data.save()
     return HttpResponseRedirect('/app/interface_config')
 #执行接口，发送请求
