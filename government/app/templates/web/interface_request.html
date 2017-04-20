@@ -12,7 +12,42 @@
 <script type="text/javascript" src="{% static 'js/sdmenu.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/laydate/laydate.js' %}"></script>
 <script type="text/javascript" src="{% static 'dist/jquery.jsonview.js' %}"></script>
-	<script type="text/javascript" src="{% static 'js/csrf.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/csrf.js' %}"></script>
+<style type="text/css">
+/*a  upload */
+.a-upload {
+    padding: 4px 10px;
+    height: 20px;
+    line-height: 20px;
+    position: relative;
+    cursor: pointer;
+    color: #888;
+    background: #fafafa;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+    display: inline-block;
+    *display: inline;
+    *zoom: 1
+}
+
+.a-upload  input {
+    position: absolute;
+    font-size: 100px;
+    right: 0;
+    top: 0;
+    opacity: 0;
+    filter: alpha(opacity=0);
+    cursor: pointer
+}
+
+.a-upload:hover {
+    color: #444;
+    background: #eee;
+    border-color: #ccc;
+    text-decoration: none
+}
+</style>
 </head>
 
 <body>
@@ -69,7 +104,6 @@ window.onload = function() {
 		<a href="{% url 'interface' %}">接口信息配置</a>
 		<a href="{% url 'personnel' %}">人员信息配置</a>
 		<a href="{% url 'project' %}">项目信息配置</a>
-        <!--<a href="{% url 'interface_config_qu' %}">接口信息相关</a>-->
 	</div>
     </div>
      </div>
@@ -99,7 +133,7 @@ window.onload = function() {
        </div>
 <div style="width:900px;margin:auto;">
 	{% for item in data %}
-	<form id="formid" class="bs-example bs-example-form" role="form" action="{%url 'interface_request' item.id %}" method="{{item.methods}}">
+	<form id="formid" enctype="multipart/form-data" class="bs-example bs-example-form"  role="form" action="{%url 'interface_request' item.id %}" method="{{item.methods}}">
       {% csrf_token %}
 <!-- 开始-->
 
@@ -107,10 +141,11 @@ window.onload = function() {
         <input id="interface_id" type="hidden" name="id" value="{{item.id}}">
 		<textarea  id='url' name="url" placeholder="请求地址" style="margin: 10px 0px 10px; height: 90px; width: 779px;">{{item.interfaceAdress}}</textarea></br>
         {% if item.interfaceHead %}
-        <input type="text" name="header" placeholder="请求头"  style="margin: 0px 0px 10px;width:200px"value="{{item.interfaceHead}}"></br>
+        <input type="text" name="header" placeholder="请求头"  style="margin: 0px 0px 10px;width:200px"value="{{item.interfaceHead}}">
 		{% endif %}
+		<a class="a-upload"><input id="upload" type="file" name="file">上传文件</a></br>
 		{% if item.interfaceBody %}
-        <input id="interfaceBody" name="body" type="hidden" name="id" value="{{item.interfaceBody}}">
+        <input id="interfaceBody" name="body" type="hidden"  value="{{item.interfaceBody}}">
 		<div id="interfaceBody_json" style="border:1px solid green;background:yellow;height:auto;min-height:100px;width=898px"></div>
 		{% endif %}
         <!-- 结束-->
@@ -151,33 +186,63 @@ var methods=$("#methods").val()
                         	//$("#json").JSONView(json)
 							console.log(typeof(json))
                         	if(methods=="GET"){
-                        		$.get('{% url "interface_get" %}',
-                        		{"url":url}, function(ret){
+                        		$.get('{% url "interface_post"%}',
+                        		{"url":url,"id":$("#interface_id").val(),"body":$("#interfaceBody").val()}, function(ret){
      							 console.log("ff");
      							// alert($("#url").val())
      							 $("#result").val(ret)
      							 $("#json").JSONView(ret)
  							 		})
- 							 }else{
- 							 	$.post(
- 							 	'{% url "interface_post"%}',
- 							 	{"id":$("#interface_id").val()}, function (ret) {
-     							 $("#result").val(ret)
-     							 $("#json").JSONView(ret)
- 							 		})
+ 						}else{
+ 							 	var formData = new FormData($("#formid")[0]);
+ 							 	$.ajax({
+									  url: '{% url "interface_post"%}' ,
+									  type: 'POST',
+									  data: formData,
+									  async: false,
+									  cache: false,
+									  contentType: false,
+									  processData: false,
+									  success: function (ret) {
+										    $("#result").val(ret)
+     							 			$("#json").JSONView(ret)
+									  },
+									  error: function (ret) {
+									  		 console.log(ret);
+									  		 var divshow=$("#json");
+									  		 divshow.text("");// 清空数据
+									  		 divshow.append("接口错误");
+									  		 alert("出现错误")
+									  }
+								 });
  							 }
 
                    });
 })
 //格式化请求体
 $(document).ready(function(){
-    $("#interfaceBody_json").JSONView($("#interfaceBody").val())
+    $("#interfaceBody_json").JSONView($("#interfaceBody").val()); //upload
+})
+//美化上传文件名称
+$(document).ready(function(){
+$(".a-upload").on("change","input[type='file']",function(){  //multipart/form-data
+    var filePath=$(this).val();
+    console.log("文件路径是:"+filePath)
+    if(filePath.indexOf("jpg")!=-1 || filePath.indexOf("png")!=-1){
+        $(".fileerrorTip").html("").hide();
+        var arr=filePath.split('\\');
+        var fileName=arr[arr.length-1];
+        $(".showFileName").html(fileName);
+        console.log("走到一")
+    }else{
+        $(".showFileName").html("");
+        $(".fileerrorTip").html("您未上传文件，或者您上传文件类型有误！").show();
+        console.log("走到二")
+        return false
+    }
+})
 })
 </script>
-
-
-
- 
 </body>
 </html>
  

@@ -37,12 +37,6 @@ urlpatterns = [
     url(r'^consultation/', dataservice_views.consultation, name='consultation'),
     url(r'^quotation/', dataservice_views.quotation, name='quotation'),
     url(r'^api_details/', dataservice_views.api_details, name='api_details'),
-	url(r'^interface_add_qu/', dataservice_views.interface_add_qu, name='interface_add_qu'),
-	url(r'^interface_config_qu/', memory_views.interface_config_qu, name='interface_config_qu'),
-    url(r'^interface_exe-(\d+)/$', dataservice_views.interface_exe, name='interface_exe'),
-    url(r'^interface_exe_request/', dataservice_views.interface_exe_request, name='interface_exe_request'),
-    url(r'^interface_delete_qu-(\d+)/$', dataservice_views.interface_delete_qu, name='interface_delete_qu'),
-    url(r'^interface_get/$', dataservice_views.interface_get, name='interface_get'),
     url(r'^interface_post/$', dataservice_views.interface_post, name='interface_post'),
     url(r'^search/$', dataservice_views.search, name='search'),
 ]

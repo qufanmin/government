@@ -1,18 +1,16 @@
 # coding:utf-8
 from django.shortcuts import render, render_to_response, get_object_or_404
-from django.http import HttpResponse, HttpResponseRedirect, response
+from django.http import HttpResponse, HttpResponseRedirect
 from app.project_from import ProjectConfigureForm
 from app.models import ProjectConfigure, InterfaceConfigure,Interfaceqqu,Interface_add
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
-import json,urllib
+import json
 import requests
-import urllib2
 import copy
-import datetime
-from django.db.models import Q
+import time
+import os
 from app.forms import InterfaceForm
-
 def project_config(request):
     try:
         curPage = int(request.GET.get('curPage', '1'))
@@ -153,65 +151,51 @@ def interface_copy(request,id):
     data.interfaceResult='2'
     data.save()
     return HttpResponseRedirect('/app/interface_config')
-#执行接口，发送请求
+#跳转到执行页面
 def interface_request(request,id):
     menu_app=ProjectConfigure.objects.filter(businessName=u'APP组').values('ProjectName').distinct()
     menu_bigdata=ProjectConfigure.objects.filter(businessName=u'大数据服务组').values('ProjectName').distinct()
-    if request.method=='POST':
-        id=int(request.POST['id'])
-        urldata=request.POST['url']
-        para1=request.POST['header']
-        para2= request.POST['body'].encode('utf-8')
-        payload=json.loads(para2)
-        print type(payload)
-        print payload
-        responsedata=requests.post(urldata,data=payload)
-        data=Interface_add.objects.filter(id=id)
-        print id,data,responsedata
-#       return render(request, 'web/interface_exe.html',{"data":json.dumps(responsedata.json())},RequestContext(request))
-        return render(request, 'web/interface_request.html',{'data':data,'responsedata':responsedata.text,'menu_bigdata':menu_bigdata,'menu_app':menu_app})
-    else:
-        id=int(id)
-        data=Interface_add.objects.filter(id=id)
-
-        return render(request, 'web/interface_request.html',{'data':data,'menu_bigdata':menu_bigdata,'menu_app':menu_app})
-def interface_get(request):
-    url=request.GET['url']
-    print url
-    responsedata=requests.get(url)
-    return HttpResponse(responsedata.text)
+    id=int(id)
+    data=Interface_add.objects.filter(id=id)
+    return render(request, 'web/interface_request.html',{'data':data,'menu_bigdata':menu_bigdata,'menu_app':menu_app})
+#执行接口get和post
 def interface_post(request):
-    id=request.POST['id']
-    print id
-    datas=Interface_add.objects.filter(id=int(id))
-    for item in datas:
-        data2=item.interfaceBody
-        headersdb=item.interfaceHead
-        url=item.interfaceAdress
-#    取出数据类型是Unicode
-#    print type(headersdb),headersdb
-    headersdb2=headersdb.encode('utf-8')#Unicode转为str
-#    print type(eval(headersdb2)),headersdb2,eval(headersdb2)
-#    print type(json.loads(headers.encode('utf-8'))),json.loads(headers.encode('utf-8'))
-    headers =eval(headersdb2)#str转为dict，为了urllib2.Request准备请求头{'Content-Type': 'application/json'}
-    data_json=eval(data2.encode('utf-8'))
-    print type(headers),headers
-    if headers['Content-type']=='application/json':
-        data_json=json.dumps(data_json)
-    url=url.encode('utf-8')
-    '''
-    try:
-        request = urllib2.Request(url, headers=headers, data=data_json)
-        response = urllib2.urlopen(request)
-        html=response.read()
-        if(response.getcode()==200):
-            Interface_add.objects.filter(id=int(id)).update(interfaceResult='1')
+    if request.method=='POST':
+        id=request.POST['id']
+        print id
+        datas=Interface_add.objects.filter(id=int(id))
+        for item in datas:
+            data2=item.interfaceBody
+            headersdb=item.interfaceHead
+            url=item.interfaceAdress
+    #    取出数据类型是Unicode
+    #    print type(headersdb),headersdb
+        headersdb2=headersdb.encode('utf-8')#Unicode转为str
+    #    print type(eval(headersdb2)),headersdb2,eval(headersdb2)
+    #    print type(json.loads(headers.encode('utf-8'))),json.loads(headers.encode('utf-8'))
+        headers =eval(headersdb2)#str转为dict，为了urllib2.Request准备请求头{'Content-Type': 'application/json'}
+        data_json=eval(data2.encode('utf-8'))
+        print type(headers),headers
+        if headers['Content-type']=='application/json':
+            data_json=json.dumps(data_json)
+        url=url.encode('utf-8')
+        if request.FILES.has_key('file'):
+            file=request.FILES['file']
+            filename=handle_uploaded_file(request.FILES['file'])
+            files={'file': open(filename, 'rb')}
+            response=requests.post(url,data=data_json,files=files)
         else:
-            Interface_add.objects.filter(id=int(id)).update(interfaceResult='0')
-    except urllib2.HTTPError, e:
-        print e.code
-    '''
-    response=requests.post(url,headers=headers,data=data_json)
+            response=requests.post(url,headers=headers,data=data_json)
+    else:
+        id=request.GET['id']
+        url=request.GET['url']
+        url=url.encode('utf-8')
+        data_json={}
+        if request.GET.has_key('body'):
+            param=request.GET['body']
+            data_json=eval(param.encode('utf-8'))
+            print data_json
+        response=requests.get(url,params=data_json)
     if(response.status_code==200):
             Interface_add.objects.filter(id=int(id)).update(interfaceResult='1')
     else:
@@ -239,9 +223,6 @@ def search(request):
         return render(request, 'web/Consultation.html',locals())
     else:
         return HttpResponse('get...')
-
-
-
 def quotation(request):
     data = InterfaceConfigure.objects.filter(businessName=u"行情信息").order_by("-id")
     # return HttpResponse(u"调试测试")
@@ -305,3 +286,18 @@ def interface_delete_qu(request,id):
     entry = get_object_or_404(Interfaceqqu, pk=int(id))
     entry.delete()
     return HttpResponseRedirect('/app/interface_config_qu')
+
+def handle_uploaded_file(f):
+    file_name = ""
+    try:
+        path = "media/file" + time.strftime('/%Y/%m/%d/%H/%M/%S/')
+        if not os.path.exists(path):
+            os.makedirs(path)
+            file_name = path + f.name
+            destination = open(file_name, 'wb+')
+            for chunk in f.chunks():
+                destination.write(chunk)
+            destination.close()
+    except Exception, e:
+        print e
+    return file_name
