@@ -100,21 +100,15 @@ def interface_delete(request,id):
 def interface_edit(request,id):
     menu_app=ProjectConfigure.objects.filter(businessName=u'APP组').values('ProjectName').distinct()
     menu_bigdata=ProjectConfigure.objects.filter(businessName=u'大数据服务组').values('ProjectName').distinct()
-    #date = get_object_or_404(Interface_add, pk=int(id))
-    data=Interface_add.objects.filter(id=int(id))
-    for item in data:
-        business=item.business
-        responsible=item.responsible
-    date = Interface_add.objects.get(pk=int(id))
-    business_id=ProjectConfigure.objects.filter(ProjectName=business)[0].id
-    responsible_id=PersonnelConfigure.objects.filter(ModularAdministration=responsible)[0].id
-    print business_id,responsible_id
+    data = get_object_or_404(Interface_add, pk=int(id))
+    business_id=ProjectConfigure.objects.filter(ProjectName=data.business)[0].id
+    responsible_id=PersonnelConfigure.objects.filter(ModularAdministration=data.responsible)[0].id
     if request.method == "POST":
-        form = InterfaceForm(request.POST, instance=date)
+        form = InterfaceForm(request.POST, instance=data)
         if form.is_valid():
             form.save()
             return  HttpResponseRedirect('/app/interface_config')
-    return render_to_response('web/interface_edit.html', {'form': InterfaceForm(initial={'business': business_id,'responsible':responsible_id},instance=date),'menu_bigdata':menu_bigdata,'menu_app':menu_app},context_instance=RequestContext(request))
+    return render_to_response('web/interface_edit.html', {'form': InterfaceForm(initial={'business': business_id,'responsible':responsible_id},instance=data),'menu_bigdata':menu_bigdata,'menu_app':menu_app},context_instance=RequestContext(request))
 #复制接口
 def interface_copy(request,id):
     data=copy.deepcopy(Interface_add.objects.get(pk=int(id)))
