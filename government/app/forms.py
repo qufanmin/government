@@ -4,11 +4,17 @@ from app.models import *
 
 class InterfaceForm(forms.ModelForm):
     business=forms.ModelChoiceField(queryset=ProjectConfigure.objects.all(),required=True,error_messages={'required':u'请选择接口'})
+#    def __init__(self, *args, **kwargs):
+#        id = kwargs.pop('id', None)
+#        super(InterfaceForm, self).__init__(*args, **kwargs)
+#        if id:
+#            self.fields['business'].queryset = Interface_add.objects.filter(id=id)
 #    business=forms.ChoiceField(label=u'业务线')
 #    def __init__(self,*args,**kwargs):
 #        super(InterfaceForm,self).__init__(*args,**kwargs)
 #        self.fields['business'].choices=((item.id,item.ProjectName) for item in ProjectConfigure.objects.all())
-    responsible=forms.CharField(max_length=255,label=u'责任人',required=True,error_messages={'required':u'责任人不能为空'})
+#    responsible=forms.CharField(max_length=255,label=u'责任人',required=True,error_messages={'required':u'责任人不能为空'})
+    responsible=forms.ModelChoiceField(queryset=PersonnelConfigure.objects.all(),required=True,error_messages={'required':u'责任人不能为空'})
     interfaceName=forms.CharField(max_length=255,label=u'接口名称',required=True,error_messages={'required':u'接口名称不能为空'})
     description=forms.CharField(max_length=255,label=u'接口描述',required=False)
     methods=forms.ChoiceField(choices=[('', '---------'),('POST', 'POST'),('GET', 'GET'),('DELETE', 'DELETE'),('PUT', 'PUT'),('HEAD', 'HEAD')],label=u'请求方式',required=True,error_messages={'required':u'请求方式不能为空'})
@@ -42,3 +48,11 @@ class InterfaceForm(forms.ModelForm):
     class Meta:
         model=Interface_add
         fields=['business','responsible','interfaceName','description','methods','IP','interfaceAdress','interfaceBody','interfaceDetails','interfaceHead']
+
+class PersonnelForm(forms.ModelForm):
+    businessName = forms.CharField(max_length=255,label=u'业务线名称',required=True,error_messages={'required':u'责任人不能为空'})
+    businessModular = forms.CharField(max_length=255,label=u'业务模块',required=True,error_messages={'required':u'责任人不能为空'})
+    ModularAdministration = forms.CharField(max_length=255,label=u'模块责任人',required=True,error_messages={'required':u'责任人不能为空'})
+    class Meta:
+        model=PersonnelConfigure
+        fields=['businessName','businessModular','ModularAdministration']

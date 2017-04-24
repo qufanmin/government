@@ -10,7 +10,7 @@
 <script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/sdmenu.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/laydate/laydate.js' %}"></script>
-
+<link rel="shortcut icon" href="{% static 'img/favoicon.png '%}" mce_href="/img/favoicon.png" type="image/x-icon">
 </head>
 
 <body>
@@ -89,64 +89,62 @@ window.onload = function() {
   接口数据录入
 </ul>
    
-   <div class="title_right"><strong>发货单填写</strong></div>
+   <div class="title_right"><strong>数据接口填写</strong></div>
          <div class="alert">
             <button type="button" class="close" data-dismiss="alert">&times;</button>
             温馨提示：接口对接信息录入
        </div>
-         {% for item in data%}
-<form action="{%url 'interface_edit' item.id %}"  method="POST">
+<form action=""  method="post">
      {% csrf_token %}
 <div style="width:900px;margin:auto;">
 
       <table class="table table-bordered" >
      <tr>
-       <td width="12%" align="right" nowrap="nowrap" bgcolor="#f1f1f1">项目名称：</td>
-       <td width="38%"><input type="text" name="business"  class="span1-5" value="{{item.business}}" disabled="false"/>
-       <input type="hidden" name="id" id="input1" class="span1-5" value="{{item.id}}" />
+       <td width="12%" align="right" nowrap="nowrap" bgcolor="#f1f1f1">*项目名称：</td>
+       <td width="38%">{{form.business}}{{form.business.errors}}
+       <input type="hidden" name="id" id="input2" class="span1-5" value="{{form.id}}"/>
        </td>
-       <td width="12%" align="right" nowrap="nowrap" bgcolor="#f1f1f1">责任人：</td>
-       <td width="38%"><input type="text" name="responsible" id="input" class="span1-5" value="{{item.responsible}}" /></td>
+       <td width="12%" align="right" nowrap="nowrap" bgcolor="#f1f1f1">*责任人：</td>
+       <td width="38%">{{form.responsible}}{{form.responsible.errors}}</td>
      </tr>
      <tr>
-       <td width="12%" align="right" nowrap="nowrap" bgcolor="#f1f1f1">接口名称：</td>
-       <td width="38%"><input type="text" name="interfaceName" id="input2" class="span1-5" value="{{item.interfaceName}}" /></td>
+       <td width="12%" align="right" nowrap="nowrap" bgcolor="#f1f1f1">*接口名称：</td>
+       <td width="38%">{{form.interfaceName}}{{form.interfaceName.errors}}</td>
        <td align="right" nowrap="nowrap" bgcolor="#f1f1f1">接口描述：</td>
-       <td><input type="text" name="description" id="description" class="span1-5" value="{{item.description}}" /></td>
+       <td>{{form.description}}</td>
      </tr>
      <tr>
-       <td align="right" bgcolor="#f1f1f1">请求方式：</td>
-       <td><input type="text" name="methods" id="methods" class="span1-5" value="{{item.methods}}" /></td>
-       <td align="right" nowrap="nowrap" bgcolor="#f1f1f1">IP地址：</td>
-       <td><input type="text" name="IP" id="input4" class="span1-5"  value="{{item.IP}}"/></td>
+       <td align="right" bgcolor="#f1f1f1">*请求方式：</td>
+       <td>{{form.methods}}{{form.methods.errors}}</td>
+       <td align="right" nowrap="nowrap" bgcolor="#f1f1f1">*IP地址：</td>
+       <td>{{form.IP}}{{form.IP.errors}}</td>
      </tr>
      <tr>
        <td align="right" bgcolor="#f1f1f1">请求头：</td>
-       <td colspan="3"><input type="text" name="interfaceHead" id="input4" class="span1-5"  value="{{item.interfaceHead}}"/></td>
+       <td colspan="3">{{form.interfaceHead}}{{form.interfaceHead.errors}}</td>
      </tr>
      <tr>
-       <td align="right" nowrap="nowrap" bgcolor="#f1f1f1">接口路径：</td>
-       <td colspan="3"><textarea name="interfaceAdress" id="input9" class="span10">{{item.interfaceAdress}}</textarea></td>
+       <td align="right" nowrap="nowrap" bgcolor="#f1f1f1">*接口路径：</td>
+       <td colspan="3">{{form.interfaceAdress}}{{form.interfaceAdress.errors}}</td>
      </tr>
      <tr>
        <td align="right" nowrap="nowrap" bgcolor="#f1f1f1">接口请求值：</td>
-       <td colspan="3"><textarea name="interfaceBody" id="input10" class="span10">{{item.interfaceBody}}</textarea></td>
+       <td colspan="3">{{form.interfaceBody}}</td>
      </tr>
      <tr>
        <td align="right" nowrap="nowrap" bgcolor="#f1f1f1">接口详情描述：</td>
-       <td colspan="3"><textarea name="interfaceDetails" id="input11" class="span10">{{item.interfaceDetails}}</textarea></td>
+       <td colspan="3">{{form.interfaceDetails}}</td>
      </tr>
    </table>
 
       <table  class="margin-bottom-20  table no-border" >
           <tr>
               <td class="text-center"><input type="submit" value="确定" class="btn btn-info  " style="width:80px;" />
-              <a  class="btn btn-info"  id="modal-9735581" href="{% url 'interface' %}" style="width:60px;">取消</a></td></td>
+              <a  class="btn btn-info"  id="modal-9735581" href="{% url 'interface' %}" style="width:60px;">取消</a></td>
           </tr>
       </table>
    </div>
     </form>
-          {% endfor %}
                <div class="alert">
       <button type="button" class="close" data-dismiss="alert">&times;</button>
       温馨提示：标示为* 为必填项
@@ -157,19 +155,11 @@ window.onload = function() {
     
 <!-- 底部 -->
 <div id="footer">版权所有：平安证券 &copy; 2017&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" target="_blank">软件保障组</a></div>
-    
-    
-
  <script>
 !function(){
 laydate.skin('molv');
 laydate({elem: '#Calendar'});
 }();
- 
 </script>
-
-
-
- 
 </body>
 </html>

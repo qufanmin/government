@@ -1,7 +1,7 @@
 # coding:utf-8
 from django.shortcuts import render
-from django.http import HttpResponse
-from app.models import LeakCanaryInfo, InterfaceConfigure,Interfaceqqu,Interface_add,ProjectConfigure
+from django.core.paginator import Paginator,EmptyPage,InvalidPage,PageNotAnInteger
+from app.models import LeakCanaryInfo,Interfaceqqu,Interface_add,ProjectConfigure
 from django.core import serializers
 import json
 
@@ -41,47 +41,21 @@ def memory_management(request):
 
 
 def interface_config(request):
-    try:
-        curPage = int(request.GET.get('curPage', '1'))
-        allPage = int(request.GET.get('allPage', '1'))
-        pageType = str(request.GET.get('pageType', ''))
-        deviceModel = request.GET.get('deviceModel', '').encode('utf8')
+    menu_app=ProjectConfigure.objects.filter(businessName=u'APP组').values('ProjectName').distinct()
+    menu_bigdata=ProjectConfigure.objects.filter(businessName=u'大数据服务组').values('ProjectName').distinct()
+    Interface_data=Interface_add.objects.all().order_by("-id")
+    try:                     #如果请求的页码少于1或者类型错误，则跳转到第1页
+        page = int(request.GET.get("page",1))
+        if page < 1:
+            page = 1
     except ValueError:
-        curPage = 1
-        allPage = 1
-        pageType = ''
-        deviceModel = ''
-    if pageType == 'pageDown':
-        if curPage<allPage:
-            curPage += 1
-        else:
-            curPage=allPage
-    if pageType == 'pageUp':
-        if curPage==1:
-            curPage=1
-        else:
-            curPage -= 1
-    start = (curPage - 1) * 10
-    end = start + 15
-    print start,end,curPage,allPage
-    if deviceModel != "":
-        data = Interface_add.objects.filter(deviceModel=deviceModel).order_by("-id")[start:end]
-        allPostCounts = Interface_add.objects.filter(deviceModel=deviceModel).order_by("-id").count()
-        menu_app=ProjectConfigure.objects.filter(businessName=u'APP组').values('ProjectName').distinct()
-        menu_bigdata=ProjectConfigure.objects.filter(businessName=u'大数据服务组').values('ProjectName').distinct()
-    else:
-        data = Interface_add.objects.all().order_by("-id")[start:end]
-        allPostCounts = Interface_add.objects.all().order_by("-id").count()
-        menu_app=ProjectConfigure.objects.filter(businessName=u'APP组').values('ProjectName').distinct()
-        menu_bigdata=ProjectConfigure.objects.filter(businessName=u'大数据服务组').values('ProjectName').distinct()
-    if curPage == 1 and allPage == 1:
-        print allPostCounts
-        allPage = allPostCounts / 10
-        remainPost = allPostCounts % 10
-        if remainPost > 0:
-            allPage += 1
-    print '&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&', data
-    return render(request, 'web/interface_config.html', {'data': data, 'curPage': curPage,'allPage':allPage,'menu_bigdata':menu_bigdata,'menu_app':menu_app})
+            page = 1
+    paginator = Paginator( Interface_data,15)   # 设置books在每页显示的数量，这里为2
+    try:                     #跳转到请求页面，如果该页不存在或者超过则跳转到尾页
+         data = paginator.page(page)
+    except(EmptyPage,InvalidPage,PageNotAnInteger):
+        data = paginator.page(paginator.num_pages)
+    return render(request, 'web/interface_config.html', locals())
 
 
 def memory_info(request):
@@ -91,35 +65,3 @@ def memory_info(request):
     print data_list
     return render(request, 'web/memory_info.html', {'data': data, 'data_list': json.dumps(data_list)})
 
-def interface_config_qu(request):
-    try:
-        curPage = int(request.GET.get('curPage', '1'))
-        allPage = int(request.GET.get('allPage', '1'))
-        pageType = str(request.GET.get('pageType', ''))
-        deviceModel = request.GET.get('deviceModel', '').encode('utf8')
-    except ValueError:
-        curPage = 1
-        allPage = 1
-        pageType = ''
-        deviceModel = ''
-    if pageType == 'pageDown':
-        curPage += 1
-    if pageType == 'pageUP':
-        curPage -= 1
-    start = (curPage - 1) * 10
-    end = start + 10
-    print "**************", id
-    if deviceModel != "":
-        data = Interfaceqqu.objects.all()
-        allPostCounts = Interfaceqqu.objects.all().count()
-    else:
-        data = Interfaceqqu.objects.all()
-        allPostCounts = Interfaceqqu.objects.all().count()
-    if curPage == 1 and allPage == 1:
-        print allPostCounts
-        allPage = allPostCounts / 10
-        remainPost = allPostCounts % 10
-        if remainPost > 0:
-            allPage += 1
-    print '&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&', data
-    return render(request, 'web/interface_config2.html', {'data': data, 'curPage': curPage})

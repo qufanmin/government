@@ -1,31 +1,24 @@
 {% load staticfiles %}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>数据服务</title>
+<title>人员信息配置</title>
 <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}" />
 <link rel="stylesheet" href="{% static 'css/css.css' %}" />
 <script type="text/javascript" src="{% static 'js/jquery1.9.0.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/sdmenu.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/laydate/laydate.js' %}"></script>
-    <script>
-        //限制表格内容的显示字数
-    function cutStr(len){
-        var obj=document.getElementById('table1').getElementsByTagName('td');
-        for (i=0;i<obj.length;i++){
-            obj[i].innerHTML=obj[i].innerHTML.substring(0,len)+'…';
-        }
-    }
-    </script>
-    <link rel="shortcut icon" href="{% static 'img/favoicon.png '%}" mce_href="/img/favoicon.png" type="image/x-icon">
+<link rel="shortcut icon" href="{% static 'img/favoicon.png '%}" mce_href="/img/favoicon.png" type="image/x-icon">
 </head>
-<body onload="cutStr(10)">
+<body>
 <div class="header">
 	 <div class="logo"><img  src="{% static 'img/mobile.png' %}" /></div>
+     
 				<div class="header-right">
-                <i class="icon-question-sign icon-white"></i> <a href="#">帮助</a> <i class="icon-off icon-white"></i> <a id="modal-973558" href="#modal-container-973558" role="button" data-toggle="modal">注销</a> <i class="icon-user icon-white"></i> <a href="#">测试人员</a> <i class="icon-envelope icon-white"></i> <a href="#">发送邮件</a>
+                <i class="icon-question-sign icon-white"></i> <a href="#">帮助</a> <i class="icon-off icon-white"></i> <a id="modal-973558" href="#modal-container-973558" role="button" data-toggle="modal">注销</a> <i class="icon-user icon-white"></i> <a href="#">测试工程师</a> <i class="icon-envelope icon-white"></i> <a href="#">发送短信</a>
                 <div id="modal-container-973558" class="modal hide fade" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width:300px; margin-left:-150px; top:30%">
 				<div class="modal-header">
 					 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
@@ -39,7 +32,7 @@
 					</p>
 				</div>
 				<div class="modal-footer">
-					 <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button> <a class="btn btn-primary" style="line-height:20px;" href="{% url 'login' %}" >确定退出</a>
+					 <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button> <a class="btn btn-primary" style="line-height:20px;" href="登录.html" >确定退出</a>
 				</div>
 			</div>
 				</div>
@@ -48,8 +41,7 @@
             
 <div id="middle">
      <div class="left">
-     
-     <script type="text/javascript">
+       <script type="text/javascript">
 var myMenu;
 window.onload = function() {
 	myMenu = new SDMenu("my_menu");
@@ -77,21 +69,23 @@ window.onload = function() {
 		<a href="{% url 'project' %}">项目信息配置</a>
 	</div>
     </div>
+
      </div>
      <div class="Switch"></div>
      <script type="text/javascript">
 	$(document).ready(function(e) {
     $(".Switch").click(function(){
 	$(".left").toggle();
-		});
+	 });
 });
 </script>
-	<div class="right"  id="mainFrame">
+
+    <div class="right"  id="mainFrame">
      <div class="right_cont">
 <ul class="breadcrumb">当前位置：
   <a href="#">首页</a> <span class="divider">/</span>
   <a href="#">后台配置</a> <span class="divider">/</span>
-  项目信息添加
+  人员信息添加
 </ul>
 		 {% if errors %}
         <ul>
@@ -100,7 +94,7 @@ window.onload = function() {
             {% endfor %}
         </ul>
         {% endif %}
-   <div class="title_right"><strong>项目信息添加</strong></div>
+   <div class="title_right"><strong>人员信息添加</strong></div>
 	   <form action="" method="post">
        {% csrf_token %}
         <table class="form-control offset4">
@@ -109,23 +103,19 @@ window.onload = function() {
 		   &nbsp&nbsp&nbsp&nbsp
         <input class="btn btn-info form-control offset5"  type = "submit" value = "提 交" />
        </form>
-   </div> 
-     </div>     
+   </div>
      </div>
      </div>
-<div id="footer">版权所有：平安证券 &copy; 2017&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://www.mycodes.net/" target="_blank">软件质量保障</a></div>
+     </div>
+         <!-- 底部 -->
+<div id="footer">版权所有：平安证券保障团队 &copy; 2017&nbsp;&nbsp;&nbsp;&nbsp;<a href="{% url 'login' %}" target="_blank">系统管理员</a></div>
  <script>
-!function(){
-laydate.skin('molv');
-laydate({elem: '#Calendar'});
-laydate.skin('molv');
-laydate({elem: '#Calendar2'});
-}();
- 
+  !function(){
+     laydate.skin('molv');
+     laydate({elem: '#Calendar'});
+     laydate.skin('molv');
+     laydate({elem: '#Calendar2'});
+   }();
 </script>
-
-
-
- 
 </body>
 </html>

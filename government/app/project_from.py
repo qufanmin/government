@@ -95,7 +95,7 @@ class ProjectConfigureForm(forms.ModelForm):
 
     class Meta(forms.Form):
         model = ProjectConfigure
-        fields = ('businessName', 'ProjectName', 'assemblyName')
+        fields = ('businessName', 'ProjectName', 'assemblyName','ProjectAdministration','SoftwareAdministration','TestAdministration')
 
 
 class InterfaceConfigureForm(forms.ModelForm):

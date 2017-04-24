@@ -13,6 +13,7 @@
 <script type="text/javascript" src="{% static 'js/laydate/laydate.js' %}"></script>
 <script type="text/javascript" src="{% static 'dist/jquery.jsonview.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/csrf.js' %}"></script>
+<link rel="shortcut icon" href="{% static 'img/favoicon.png '%}" mce_href="/img/favoicon.png" type="image/x-icon">
 <style type="text/css">
 /*a  upload */
 .a-upload {
@@ -143,7 +144,7 @@ window.onload = function() {
         {% if item.interfaceHead %}
         <input type="text" name="header" placeholder="请求头"  style="margin: 0px 0px 10px;width:200px"value="{{item.interfaceHead}}">
 		{% endif %}
-		<a class="a-upload"><input id="upload" type="file" name="file">上传文件</a></br>
+        <a class="a-upload"><input id="upload" type="file" name="file">上传文件</a></br>
 		{% if item.interfaceBody %}
         <input id="interfaceBody" name="body" type="hidden"  value="{{item.interfaceBody}}">
 		<div id="interfaceBody_json" style="border:1px solid green;background:yellow;height:auto;min-height:100px;width=898px"></div>

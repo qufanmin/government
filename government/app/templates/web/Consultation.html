@@ -19,6 +19,7 @@
         }
     }
     </script>
+    <link rel="shortcut icon" href="{% static 'img/favoicon.png '%}" mce_href="/img/favoicon.png" type="image/x-icon">
 </head>
 <body onload="cutStr(10)">
 <div class="header">
@@ -89,19 +90,19 @@ window.onload = function() {
      <div class="right_cont">
 <ul class="breadcrumb">当前位置：
   <a href="#">首页</a> <span class="divider">/</span>
-  <a href="#">数据服务</a> <span class="divider">/</span>咨询接口
+  <a href="#">{{name}}</a>
 </ul>
-   <div class="title_right"><strong>内存信息</strong></div>
+   <div class="title_right"><strong>{{name}}数据</strong></div>
    <div style="margin:auto">
        <form action="/app/search/" method="post">
            {% csrf_token %}
        <table class="table table-bordered">
            <tr>
                <td width="10%" align="right" bgcolor="#f1f1f1">接口名称：</td>
-               <td width="23%"><input type="text" name="interfaceName" id="input18" class="span1-1" /></td>
+               <td width="23%"><input type="text" name="interfaceName" id="input18" class="span1-1" value="{{interfaceName}}"/>
+               <input type="hidden" name="projectname" value="{{name}}"/></td>
                <td width="10%" align="right" bgcolor="#f1f1f1">责任人：</td>
-               <td width="23%"><input type="text" name="responsible" id="daozhan"  class="span1-1"  />
-                                 <input type="hidden" name="projectname" value="{{business}}"/></td>
+               <td width="23%"><input type="text" name="responsible" id="daozhan"  class="span1-1" value="{{responsible}}" /></td>
                <td class="text-center"><input type="submit" value="查询" class="btn btn-info " style="width:80px;" /></td>
                <td class="text-center"><a  class="btn btn-info btn-small"  id="modal-9735581" href="{% url 'interface_add' %}" role="button" data-toggle="modal">添加接口配置</a></td>
            </tr>
@@ -113,7 +114,7 @@ window.onload = function() {
            <td align="center" nowrap="nowrap" bgcolor="#f1f1f1"><strong>接口名称</strong></td>
            <td align="center" nowrap="nowrap" bgcolor="#f1f1f1"><strong>业务描述</strong></td>
            <td align="center" nowrap="nowrap" bgcolor="#f1f1f1"><strong>请求方式</strong></td>
-           <td align="center" nowrap="nowrap" bgcolor="#f1f1f1"><strong>IP地址</strong></td>
+           <!--<td align="center" nowrap="nowrap" bgcolor="#f1f1f1"><strong>IP地址</strong></td>-->
            <td align="center" nowrap="nowrap" bgcolor="#f1f1f1"><strong>责任人</strong></td>
            <td align="center" nowrap="nowrap" bgcolor="#f1f1f1"><strong>结果</strong></td>
            <td align="center" nowrap="nowrap" bgcolor="#f1f1f1"><strong>操作</strong></td>
@@ -124,26 +125,37 @@ window.onload = function() {
            <td align="center"><strong>{{item.interfaceName}}</strong></td>
            <td align="center" title="{{item.interfaceDetails}}"><div style="width:100px;height: 20px;overflow-x:hidden;overflow-y:hidden;overflow:hidden;text-overflow:ellipsis;">{{item.interfaceDetails}}</div></td>
            <td align="center">{{item.methods}}</td>
-           <td align="center">{{item.IP}}</td>
+           <!--<td align="center">{{item.IP}}</td>-->
            <td align="center">{{item.responsible }}</td>
               {% ifequal item.interfaceResult "0" %}
-                    <td align="center" bgcolor="red">失败</td>
+                    <td align="center" ><span class="label label-warning">失败</span></td>
               {% endifequal %}
               {% ifequal item.interfaceResult "1" %}
-                    <td align="center" bgcolor="green">成功</td>
+                    <td align="center" ><span class="label label-success">成功</span></td>
               {% endifequal %}
               {% ifequal item.interfaceResult "2" %}
-                    <td align="center" bgcolor="gray">未执行</td>
+                    <td align="center" ><span class="label label-info">未执行</span></td>
               {% endifequal %}
            <td align="center"><div style="width:100px;height: 20px;overflow-x:hidden;overflow-y:hidden;"><a href="{%url 'interface_request' item.id %}">执行</a></div></td>
            {% endfor %}
          </tr>
        </table>
-        <div class="title_right">
+               <div class="title_left">
+             <span class="pull-left margin-bottom-5">
+                 <ul class="pager">
+                 <a >[第{{ data.number }}/{{ data.paginator.num_pages }}页]</a>
+                 </ul>
+             </span>
+         </div>
+         <div class="title_right">
              <span class="pull-right margin-bottom-5">
                  <ul class="pager">
-                     <li><a href="#">上一页</a></li>
-                     <li><a href="#">下一页</a></li>
+                     {% if data.has_previous %}
+                     <li><a href="/app/consultation/?page={{ data.previous_page_number }}&&name={{name}}">上一页</a></li>
+                     {% endif %}
+                     {% if data.has_next %}
+                     <li><a href="/app/consultation/?page={{ data.next_page_number }}&&name={{name}}">下一页</a></li>
+                     {% endif %}
                  </ul>
              </span>
          </div>

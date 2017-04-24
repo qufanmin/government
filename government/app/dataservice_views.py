@@ -2,7 +2,7 @@
 from django.shortcuts import render, render_to_response, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
 from app.project_from import ProjectConfigureForm
-from app.models import ProjectConfigure, InterfaceConfigure,Interfaceqqu,Interface_add
+from app.models import ProjectConfigure, InterfaceConfigure,Interfaceqqu,Interface_add,PersonnelConfigure
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 import json
@@ -11,47 +11,24 @@ import copy
 import time
 import os
 from app.forms import InterfaceForm
+from django.core.paginator import Paginator,EmptyPage,InvalidPage,PageNotAnInteger
 def project_config(request):
-    try:
-        curPage = int(request.GET.get('curPage', '1'))
-        allPage = int(request.GET.get('allPage', '1'))
-        pageType = str(request.GET.get('pageType', ''))
-        businessName = request.GET.get('businessName', '').encode('utf8')
+    datas = ProjectConfigure.objects.all().order_by("-id")
+    allPostCounts = ProjectConfigure.objects.all().order_by("-id").count()
+    menu_app=ProjectConfigure.objects.filter(businessName=u'APP组').values('ProjectName').distinct()
+    menu_bigdata=ProjectConfigure.objects.filter(businessName=u'大数据服务组').values('ProjectName').distinct()
+    try:                     #如果请求的页码少于1或者类型错误，则跳转到第1页
+        page = int(request.GET.get("page",1))
+        if page < 1:
+            page = 1
     except ValueError:
-        curPage = 1
-        allPage = 1
-        pageType = ''
-        businessName = ''
-    if pageType == 'pageDown':
-        if curPage<allPage:
-            curPage += 1
-        else:
-            curPage=allPage
-    if pageType == 'pageUp':
-        if curPage==1:
-            curPage=1
-        else:
-            curPage -= 1
-    start = (curPage - 1) * 10
-    end = start + 10
-    print "**************", id
-    if businessName != "":
-        data = ProjectConfigure.objects.filter(businessName=businessName).order_by("-id")[start:end]
-        allPostCounts = ProjectConfigure.objects.filter(businessName=businessName).order_by("-id").count()
-        menu_app=ProjectConfigure.objects.filter(businessName=u'APP组').values('ProjectName').distinct()
-        menu_bigdata=ProjectConfigure.objects.filter(businessName=u'大数据服务组').values('ProjectName').distinct()
-    else:
-        data = ProjectConfigure.objects.all().order_by("-id")[start:end]
-        allPostCounts = ProjectConfigure.objects.all().order_by("-id").count()
-        menu_app=ProjectConfigure.objects.filter(businessName=u'APP组').values('ProjectName').distinct()
-        menu_bigdata=ProjectConfigure.objects.filter(businessName=u'大数据服务组').values('ProjectName').distinct()
-    if curPage == 1 and allPage == 1:
-        print allPostCounts
-        allPage = allPostCounts / 10
-        remainPost = allPostCounts % 10
-        if remainPost > 0:
-            allPage += 1
-    return render(request, 'web/project_config.html', {'data': data, 'curPage': curPage,'allPage':allPage,'menu_bigdata':menu_bigdata,'menu_app':menu_app})
+            page = 1
+    paginator = Paginator( datas,15)   # 设置books在每页显示的数量，这里为2
+    try:                     #跳转到请求页面，如果该页不存在或者超过则跳转到尾页
+         data = paginator.page(page)
+    except(EmptyPage,InvalidPage,PageNotAnInteger):
+        data = paginator.page(paginator.num_pages)
+    return render(request, 'web/project_config.html', locals())
 
 
 @csrf_exempt
@@ -62,15 +39,7 @@ def project_add(request):
     if request.method == 'POST':
         form = ProjectConfigureForm(request.POST)
         if form.is_valid():
-            data = form.cleaned_data
-            business = data['businessName']
-            project = data['ProjectName']
-            assembly = data['assemblyName']
-            ProjectAdministration=data['ProjectAdministration']
-            SoftwareAdministration=data['SoftwareAdministration']
-            TestAdministration=data['TestAdministration']
-            data = ProjectConfigure(businessName=business, ProjectName=project, assemblyName=assembly,ProjectAdministration=ProjectAdministration,SoftwareAdministration=SoftwareAdministration,TestAdministration=TestAdministration)
-            data.save()
+            form.save()
             return HttpResponseRedirect('/app/project_config/')
         else:
             return render_to_response("web/project_add.html", locals(), RequestContext(request))
@@ -87,12 +56,15 @@ def project_add(request):
 @csrf_exempt
 def project_update(request,id):
     date = get_object_or_404(ProjectConfigure, pk=int(id))
+    menu_app=ProjectConfigure.objects.filter(businessName=u'APP组').values('ProjectName').distinct()
+    menu_bigdata=ProjectConfigure.objects.filter(businessName=u'大数据服务组').values('ProjectName').distinct()
+    print date
     if request.method == "POST":
         form = ProjectConfigureForm(request.POST, instance=date)
         if form.is_valid():
             date = form.save()
             return HttpResponseRedirect('/app/project_config/')
-    return render_to_response('web/project_update.html', {'form': ProjectConfigureForm(instance=date)})
+    return render_to_response('web/project_update.html', {'form': ProjectConfigureForm(instance=date),'menu_bigdata':menu_bigdata,'menu_app':menu_app})
 
 
 @csrf_exempt
@@ -124,26 +96,25 @@ def interface_delete(request,id):
     entry.delete()
     return HttpResponseRedirect('/app/interface_config')
 #编辑接口
+@csrf_exempt
 def interface_edit(request,id):
-    if request.method=='POST':
-#        business=request.POST['business']
-        responsible=request.POST['responsible']
-        interfaceName=request.POST['interfaceName']
-        description=request.POST['description']
-        methods=request.POST['methods']
-        IP=request.POST['IP']
-        interfaceAdress=request.POST['interfaceAdress']
-        interfaceBody=request.POST['interfaceBody']
-        interfaceDetails=request.POST['interfaceDetails']
-        interfaceHead=request.POST['interfaceHead']
-        Interface_add.objects.filter(id=int(id)).update(responsible=responsible,interfaceName=interfaceName,description=description,methods=methods,IP=IP,interfaceAdress=interfaceAdress,interfaceBody=interfaceBody,interfaceDetails=interfaceDetails,interfaceHead=interfaceHead)
-        return HttpResponseRedirect('/app/interface_config')
-    else:
-        id=int(id)
-        data=Interface_add.objects.filter(id=id)
-        menu_app=ProjectConfigure.objects.filter(businessName=u'APP组').values('ProjectName').distinct()
-        menu_bigdata=ProjectConfigure.objects.filter(businessName=u'大数据服务组').values('ProjectName').distinct()
-        return render(request, 'web/interface_edit.html',{'data':data,'menu_bigdata':menu_bigdata,'menu_app':menu_app})
+    menu_app=ProjectConfigure.objects.filter(businessName=u'APP组').values('ProjectName').distinct()
+    menu_bigdata=ProjectConfigure.objects.filter(businessName=u'大数据服务组').values('ProjectName').distinct()
+    #date = get_object_or_404(Interface_add, pk=int(id))
+    data=Interface_add.objects.filter(id=int(id))
+    for item in data:
+        business=item.business
+        responsible=item.responsible
+    date = Interface_add.objects.get(pk=int(id))
+    business_id=ProjectConfigure.objects.filter(ProjectName=business)[0].id
+    responsible_id=PersonnelConfigure.objects.filter(ModularAdministration=responsible)[0].id
+    print business_id,responsible_id
+    if request.method == "POST":
+        form = InterfaceForm(request.POST, instance=date)
+        if form.is_valid():
+            form.save()
+            return  HttpResponseRedirect('/app/interface_config')
+    return render_to_response('web/interface_edit.html', {'form': InterfaceForm(initial={'business': business_id,'responsible':responsible_id},instance=date),'menu_bigdata':menu_bigdata,'menu_app':menu_app},context_instance=RequestContext(request))
 #复制接口
 def interface_copy(request,id):
     data=copy.deepcopy(Interface_add.objects.get(pk=int(id)))
@@ -207,10 +178,21 @@ def consultation(request):
     # return HttpResponse(u"调试测试")
 #    data = InterfaceConfigure.objects.filter(businessName=u"咨询业务").order_by("-id")
     name=request.GET['name']
-    data=Interface_add.objects.filter(business=name).order_by('-id')[:20]
+    datas=Interface_add.objects.filter(business=name).order_by('-id')[:20]
     menu_app=ProjectConfigure.objects.filter(businessName=u'APP组').values('ProjectName').distinct()
     menu_bigdata=ProjectConfigure.objects.filter(businessName=u'大数据服务组').values('ProjectName').distinct()
-    return render(request, 'web/Consultation.html', {'data': data,'menu_bigdata':menu_bigdata,'menu_app':menu_app,'business':name})
+    try:                     #如果请求的页码少于1或者类型错误，则跳转到第1页
+        page = int(request.GET.get("page",1))
+        if page < 1:
+            page = 1
+    except ValueError:
+            page = 1
+    paginator = Paginator( datas,10)   # 设置books在每页显示的数量，这里为2
+    try:                     #跳转到请求页面，如果该页不存在或者超过则跳转到尾页
+         data = paginator.page(page)
+    except(EmptyPage,InvalidPage,PageNotAnInteger):
+        data = paginator.page(paginator.num_pages)
+    return render(request, 'web/Consultation.html', locals())
 #细分页面搜索
 def search(request):
     menu_app=ProjectConfigure.objects.filter(businessName=u'APP组').values('ProjectName').distinct()
@@ -218,8 +200,19 @@ def search(request):
     if request.method=='POST':
         interfaceName=request.POST['interfaceName']
         responsible=request.POST['responsible']
-        projectname=request.POST['projectname']
-        data=Interface_add.objects.filter(interfaceName__icontains=interfaceName,responsible__icontains=responsible).order_by('-id')[:50]
+        name=request.POST['projectname']
+        datas=Interface_add.objects.filter(interfaceName__icontains=interfaceName,responsible__icontains=responsible,business__icontains=name).order_by('-id')
+        try:                     #如果请求的页码少于1或者类型错误，则跳转到第1页
+            page = int(request.GET.get("page",1))
+            if page < 1:
+                page = 1
+        except ValueError:
+            page = 1
+        paginator = Paginator( datas,10)   # 设置books在每页显示的数量，这里为2
+        try:                     #跳转到请求页面，如果该页不存在或者超过则跳转到尾页
+            data = paginator.page(page)
+        except(EmptyPage,InvalidPage,PageNotAnInteger):
+            data = paginator.page(paginator.num_pages)
         return render(request, 'web/Consultation.html',locals())
     else:
         return HttpResponse('get...')

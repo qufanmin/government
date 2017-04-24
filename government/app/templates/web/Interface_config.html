@@ -11,7 +11,7 @@
 <script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/sdmenu.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/laydate/laydate.js' %}"></script>
-
+<link rel="shortcut icon" href="{% static 'img/favoicon.png '%}" mce_href="/img/favoicon.png" type="image/x-icon">
 </head>
 <body>
 <div class="header">
@@ -129,7 +129,7 @@ window.onload = function() {
 			</div>
       <div class="alert">
           <button type="button" class="close" data-dismiss="alert">&times;</button>
-              温馨提示：添加接口配置前请先添加项目信息配置
+              温馨提示：添加接口配置前请先添加项目信息配置和人员信息配置
       </div>
          <table class="table table-bordered table-striped table-hover">
      <tbody>
@@ -139,7 +139,7 @@ window.onload = function() {
            <td nowrap="nowrap"><strong>接口名称</strong></td>
            <td nowrap="nowrap"><strong>接口描述</strong></td>
            <td><strong>请求方式</strong></td>
-           <td><strong>接口IP地址</strong></td>
+           <!--<td><strong>接口IP地址</strong></td>-->
            <td><strong>接口路径</strong></td>
            <td><strong>接口请求值</strong></td>
            <td><strong>接口责任人</strong></td>
@@ -152,7 +152,7 @@ window.onload = function() {
          <td nowrap="nowrap">{{item.interfaceName}}</td>
          <td nowrap="nowrap">{{item.description}}</td>
          <td nowrap="nowrap">{{item.methods}}</td>
-         <td nowrap="nowrap"><div style="width:90px;overflow-x:hidden;overflow-y:hidden;">{{item.IP}}</div></td>
+         <!--<td nowrap="nowrap"><div style="width:90px;overflow-x:hidden;overflow-y:hidden;">{{item.IP}}</div></td>-->
          <td nowrap="nowrap" title="{{item.interfaceAdress}}"><div style="width:100px;overflow-x:hidden;overflow-y:hidden;">{{item.interfaceAdress}}</div></td>
          <td nowrap="nowrap" title="{{item.interfaceBody}}"><div style="width:90px;overflow-x:hidden;overflow-y:hidden;">{{item.interfaceBody}}</div></td>
          <td nowrap="nowrap">{{item.responsible}}</td>
@@ -161,11 +161,22 @@ window.onload = function() {
        {% endfor %}
      </tbody>
    </table>
+         <div class="title_left">
+             <span class="pull-left margin-bottom-5">
+                 <ul class="pager">
+                 <a >[第{{ data.number }}/{{ data.paginator.num_pages }}页]</a>
+                 </ul>
+             </span>
+         </div>
          <div class="title_right">
              <span class="pull-right margin-bottom-5">
                  <ul class="pager">
-                     <li><a href="/app/interface_config?curPage={{curPage}}&&allPage={{allPage}}&&pageType=pageUp">上一页</a></li>
-                     <li><a href="/app/interface_config?curPage={{curPage}}&&allPage={{allPage}}&&pageType=pageDown">下一页</a></li>
+                     {% if data.has_previous %}
+                     <li><a href="/app/interface_config?page={{ data.previous_page_number }}&&pageType=pageUp">上一页</a></li>
+                     {% endif %}
+                     {% if data.has_next %}
+                     <li><a href="/app/interface_config?page={{ data.next_page_number }}&&pageType=pageDown">下一页</a></li>
+                     {% endif %}
                  </ul>
              </span>
          </div>

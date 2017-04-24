@@ -55,6 +55,8 @@ class PersonnelConfigure(models.Model):
     ModularAdministration = models.CharField(max_length=255, null=True)
     describe = models.TextField(null=True)
     info = models.TextField(null=True)
+    def __unicode__(self):
+        return self. ModularAdministration
 #屈凡民接口添加保存到数据库
 class Interfaceqqu(models.Model):
 	projectName=models.CharField(max_length=255, null=True)
