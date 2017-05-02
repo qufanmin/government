@@ -1,0 +1,16 @@
+<div >
+		<span>大数据服务组</span>
+		 {% for item in menu_data %}
+         {% ifequal item.businessName '大数据服务组'%}
+		   <a href="{%url 'consultation' item.id %}">{{item.ProjectName}}</a>
+         {% endifequal %}
+         {% endfor %}
+</div>
+<div >
+		<span>APP组</span>
+		 {% for item in menu_data %}
+        {% ifequal item.businessName 'APP组'%}
+		  <a href="{%url 'consultation' item.id %}">{{item.ProjectName}}</a>
+        {% endifequal %}
+         {% endfor %}
+</div>

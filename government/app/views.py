@@ -44,8 +44,7 @@ def personnel_config(request):
     string = u"我在自强学堂学习Django，用它来建网站"
     # return HttpResponse(u"调试测试")
     datas=PersonnelConfigure.objects.all().order_by("-id")
-    menu_app=ProjectConfigure.objects.filter(businessName=u'APP组').values('ProjectName').distinct()
-    menu_bigdata=ProjectConfigure.objects.filter(businessName=u'大数据服务组').values('ProjectName').distinct()
+    menu_data=ProjectConfigure.objects.all()
     try:                     #如果请求的页码少于1或者类型错误，则跳转到第1页
         page = int(request.GET.get("page",1))
         if page < 1:
@@ -69,15 +68,13 @@ def personnel_add(request):
             return HttpResponseRedirect('/app/personnel_config/')
         else:
             return render_to_response("web/personnel_add.html", locals(), RequestContext(request))
-    menu_app=ProjectConfigure.objects.filter(businessName=u'APP组').values('ProjectName').distinct()
-    menu_bigdata=ProjectConfigure.objects.filter(businessName=u'大数据服务组').values('ProjectName').distinct()
+    menu_data=ProjectConfigure.objects.all()
     form=PersonnelForm()
     return render(request, 'web/personnel_add.html', locals())
 @csrf_exempt
 def personnel_update(request,id):
     date = get_object_or_404(PersonnelConfigure, pk=int(id))
-    menu_app=ProjectConfigure.objects.filter(businessName=u'APP组').values('ProjectName').distinct()
-    menu_bigdata=ProjectConfigure.objects.filter(businessName=u'大数据服务组').values('ProjectName').distinct()
+    menu_data=ProjectConfigure.objects.all()
     print date
     if request.method == "POST":
         form = PersonnelForm(request.POST, instance=date)
@@ -87,7 +84,12 @@ def personnel_update(request,id):
     return render_to_response('web/personnel_update.html', {'form': PersonnelForm(instance=date),'menu_bigdata':menu_bigdata,'menu_app':menu_app},context_instance=RequestContext(request))
 def personnel_delete(request,id):
      entry = get_object_or_404(PersonnelConfigure, pk=int(id))
-     entry.delete()
+     try:
+        entry.delete()
+     except Exception,e:
+        data = PersonnelConfigure.objects.all().order_by("-id")
+        error=u'请先删除关联的接口'
+        return render_to_response('web/personnel_config.html',locals())
      return HttpResponseRedirect('/app/personnel_config/')
 def project_add(request):
     string = u"我在自强学堂学习Django，用它来建网站"

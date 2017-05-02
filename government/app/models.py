@@ -68,16 +68,15 @@ class Interfaceqqu(models.Model):
 def __unicode__(self):
 	return self.interfaceName
 class Interface_add(models.Model):
-    business=models.CharField(max_length=255, null=True)
-    responsible=models.CharField(max_length=255, null=True)
+    business=models.ForeignKey(ProjectConfigure,on_delete=models.DO_NOTHING)
+    responsible=models.ForeignKey(PersonnelConfigure,on_delete=models.DO_NOTHING)
     interfaceName=models.CharField(max_length=255, null=True)
-    description=models.CharField(max_length=255, null=True)
+    description=models.CharField(max_length=255, null=True, blank=True)
     methods=models.CharField(max_length=255, null=True)
-    IP=models.CharField(max_length=255, null=True)
     interfaceAdress=models.CharField(max_length=255, null=True)
-    interfaceBody=models.CharField(max_length=2000, null=True)
-    interfaceDetails=models.CharField(max_length=255, null=True)
-    interfaceHead=models.CharField(max_length=100,null=True)
+    interfaceBody=models.CharField(max_length=2000, null=True, blank=True)
+    interfaceDetails=models.CharField(max_length=255, null=True, blank=True)
+    interfaceHead=models.CharField(max_length=100,null=True, blank=True)
     interfaceResult=models.CharField(max_length=10,default=2)
     def __unicode__(self):
 	    return self.business

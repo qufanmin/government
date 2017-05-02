@@ -41,8 +41,7 @@ def memory_management(request):
 
 
 def interface_config(request):
-    menu_app=ProjectConfigure.objects.filter(businessName=u'APP组').values('ProjectName').distinct()
-    menu_bigdata=ProjectConfigure.objects.filter(businessName=u'大数据服务组').values('ProjectName').distinct()
+    menu_data=ProjectConfigure.objects.all()
     Interface_data=Interface_add.objects.all().order_by("-id")
     try:                     #如果请求的页码少于1或者类型错误，则跳转到第1页
         page = int(request.GET.get("page",1))

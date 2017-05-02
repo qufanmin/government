@@ -54,18 +54,7 @@ window.onload = function() {
 </script>
 
 <div id="my_menu" class="sdmenu">
-	<div >
-		<span>大数据服务组</span>
-		 {% for item in menu_bigdata %}
-		  <a href=/app/consultation/?name={{item.ProjectName}}>{{item.ProjectName}}</a>
-         {% endfor %}
-	</div>
-    <div >
-		<span>APP组</span>
-		 {% for item in menu_app %}
-		  <a href=/app/consultation/?name={{item.ProjectName}}>{{item.ProjectName}}</a>
-         {% endfor %}
-	</div>
+{% include 'web/menu.html' %}
     <div >
 		<span>数据配置</span>
 		<a href="{% url 'interface' %}">接口信息配置</a>
@@ -93,7 +82,7 @@ window.onload = function() {
    <div class="title_right">
        <span class="pull-right margin-bottom-5">
            <a  class="btn btn-info btn-small"  id="modal-9" href="{% url 'project_add' %}" role="button" data-toggle="modal">
-               <i class="icon-plus icon-white"></i> 添加项目信息配置</a></span><strong>项目配置信息</strong>
+               <i class="icon-plus icon-white"></i> 添加项目信息配置</a></span><strong>项目配置信息</strong ></span><a style="background:yellow">{{error}}</a>
    </div>
    <div id="modal-container-9735581" class="modal hide fade" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="width:600px; margin-left:-300px; top:20%">
 				<div class="modal-header">
@@ -147,7 +136,7 @@ window.onload = function() {
            <td nowrap="nowrap">{{item.ProjectAdministration}}</td>
            <td nowrap="nowrap">{{item.SoftwareAdministration}}</td>
            <td nowrap="nowrap">{{item.TestAdministration}}</td>
-           <td nowrap="nowrap"><a href="{%url 'project_delete' item.id %}" onclick="return confirm('确认删除吗？')">删除</a> <a data-toggle="modal" href="{%url 'project_update' item.id %}">编辑</a></td>
+            <td nowrap="nowrap"><a href="{%url 'project_delete' item.id %}" onclick="return confirm('确认删除吗？')">删除</a> <a data-toggle="modal" href="{%url 'project_update' item.id %}">编辑</a></td>
        </tr>
        {% endfor %}
      </tbody>

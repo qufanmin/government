@@ -50,18 +50,7 @@ window.onload = function() {
 };
 </script>
 	<div id="my_menu" class="sdmenu">
-	<div >
-		<span>大数据服务组</span>
-		 {% for item in menu_bigdata %}
-		  <a href=/app/consultation/?name={{item.ProjectName}}>{{item.ProjectName}}</a>
-         {% endfor %}
-	</div>
-    <div >
-		<span>APP组</span>
-		 {% for item in menu_app %}
-		  <a href=/app/consultation/?name={{item.ProjectName}}>{{item.ProjectName}}</a>
-         {% endfor %}
-	</div>
+	{% include 'web/menu.html' %}
     <div >
 		<span>后台配置</span>
 		<a href="{% url 'interface' %}">接口信息配置</a>
@@ -116,11 +105,7 @@ window.onload = function() {
      <tr>
        <td align="right" bgcolor="#f1f1f1">*请求方式：</td>
        <td>{{form.methods}}{{form.methods.errors}}</td>
-       <td align="right" nowrap="nowrap" bgcolor="#f1f1f1">*IP地址：</td>
-       <td>{{form.IP}}{{form.IP.errors}}</td>
-     </tr>
-     <tr>
-       <td align="right" bgcolor="#f1f1f1">请求头：</td>
+        <td align="right" bgcolor="#f1f1f1">请求头：</td>
        <td colspan="3">{{form.interfaceHead}}{{form.interfaceHead.errors}}</td>
      </tr>
      <tr>

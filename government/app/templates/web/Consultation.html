@@ -57,18 +57,7 @@ window.onload = function() {
 </script>
 
 <div id="my_menu" class="sdmenu">
-	<div >
-		<span>大数据服务组</span>
-		 {% for item in menu_bigdata %}
-		  <a href=/app/consultation/?name={{item.ProjectName}}>{{item.ProjectName}}</a>
-         {% endfor %}
-	</div>
-    <div >
-		<span>APP组</span>
-		 {% for item in menu_app %}
-		  <a href=/app/consultation/?name={{item.ProjectName}}>{{item.ProjectName}}</a>
-         {% endfor %}
-	</div>
+{% include 'web/menu.html' %}
         <div >
 		<span>后台配置</span>
 		<a href="{% url 'interface' %}">接口信息配置</a>
@@ -151,10 +140,10 @@ window.onload = function() {
              <span class="pull-right margin-bottom-5">
                  <ul class="pager">
                      {% if data.has_previous %}
-                     <li><a href="/app/consultation/?page={{ data.previous_page_number }}&&name={{name}}">上一页</a></li>
+                     <li><a href="{%url 'consultation' id %}?page={{ data.previous_page_number }}&&name={{name}}">上一页</a></li>
                      {% endif %}
                      {% if data.has_next %}
-                     <li><a href="/app/consultation/?page={{ data.next_page_number }}&&name={{name}}">下一页</a></li>
+                     <li><a href="{%url 'consultation' id %}?page={{ data.next_page_number }}&&name={{name}}">下一页</a></li>
                      {% endif %}
                  </ul>
              </span>

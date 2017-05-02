@@ -18,7 +18,7 @@ class InterfaceForm(forms.ModelForm):
     interfaceName=forms.CharField(max_length=255,label=u'接口名称',required=True,error_messages={'required':u'接口名称不能为空'})
     description=forms.CharField(max_length=255,label=u'接口描述',required=False)
     methods=forms.ChoiceField(choices=[('', '---------'),('POST', 'POST'),('GET', 'GET'),('DELETE', 'DELETE'),('PUT', 'PUT'),('HEAD', 'HEAD')],label=u'请求方式',required=True,error_messages={'required':u'请求方式不能为空'})
-    IP=forms.CharField(max_length=255,label=u'IP地址',required=True,error_messages={'required':u'IP不能为空'})
+#    IP=forms.CharField(max_length=255,label=u'IP地址',required=True,error_messages={'required':u'IP不能为空'})
     interfaceHead=forms.CharField(max_length=100,required=False)
     interfaceAdress=forms.CharField(
         max_length=255,label=u'接口路径',
@@ -47,7 +47,7 @@ class InterfaceForm(forms.ModelForm):
     ),)
     class Meta:
         model=Interface_add
-        fields=['business','responsible','interfaceName','description','methods','IP','interfaceAdress','interfaceBody','interfaceDetails','interfaceHead']
+        fields=['business','responsible','interfaceName','description','methods','interfaceAdress','interfaceBody','interfaceDetails','interfaceHead']
 
 class PersonnelForm(forms.ModelForm):
     businessName = forms.CharField(max_length=255,label=u'业务线名称',required=True,error_messages={'required':u'责任人不能为空'})
